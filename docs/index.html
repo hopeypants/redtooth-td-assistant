@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redtooth TD Assistant — Install</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Source+Sans+3:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0f1419;
+        --card: #1a222d;
+        --text: #e8ecf0;
+        --muted: #9aa5b1;
+        --accent: #c94c4c;
+        --accent-dim: #8b3535;
+        --border: #2a3544;
+        --code-bg: #121920;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: 'Source Sans 3', system-ui, sans-serif;
+        font-size: 17px;
+        line-height: 1.55;
+        color: var(--text);
+        background: var(--bg);
+        background-image:
+          radial-gradient(ellipse 120% 80% at 100% 0%, rgba(201, 76, 76, 0.12), transparent 50%),
+          radial-gradient(ellipse 80% 60% at 0% 100%, rgba(42, 53, 68, 0.5), transparent 45%);
+      }
+
+      .wrap {
+        max-width: 40rem;
+        margin: 0 auto;
+        padding: 2.5rem 1.25rem 4rem;
+      }
+
+      header {
+        margin-bottom: 2rem;
+      }
+
+      h1 {
+        font-family: Fraunces, Georgia, serif;
+        font-weight: 700;
+        font-size: clamp(1.75rem, 4vw, 2.15rem);
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.5rem;
+        color: var(--text);
+      }
+
+      .tagline {
+        margin: 0;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.35rem 1.5rem 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+      }
+
+      .card h2 {
+        font-family: Fraunces, Georgia, serif;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0 0 1rem;
+        color: var(--accent);
+      }
+
+      ol.steps {
+        margin: 0;
+        padding-left: 1.35rem;
+      }
+
+      ol.steps li {
+        margin-bottom: 0.85rem;
+      }
+
+      ol.steps li:last-child {
+        margin-bottom: 0;
+      }
+
+      code,
+      .path {
+        font-family: ui-monospace, 'Cascadia Code', monospace;
+        font-size: 0.9em;
+        background: var(--code-bg);
+        padding: 0.15em 0.45em;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+
+      pre {
+        margin: 0.75rem 0 0;
+        padding: 1rem 1.1rem;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 0.88rem;
+        line-height: 1.45;
+      }
+
+      pre code {
+        padding: 0;
+        border: none;
+        background: none;
+      }
+
+      .note {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+
+      footer {
+        margin-top: 2rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.9rem;
+        color: var(--muted);
+      }
+
+      footer a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Redtooth TD Assistant</h1>
+        <p class="tagline">
+          Install the Chrome extension from source — helpers for Redtooth venue admin
+          (Tournament Director).
+        </p>
+      </header>
+
+      <div class="card">
+        <h2>Prerequisites</h2>
+        <p style="margin: 0">
+          <a href="https://nodejs.org/" style="color: var(--accent); font-weight: 600">Node.js</a>
+          18+ and
+          <strong>Google Chrome</strong> (or Chromium: Edge, Brave, etc.).
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Install (unpacked)</h2>
+        <ol class="steps">
+          <li>
+            Clone the repository (or download a ZIP from GitHub and extract it).
+          </li>
+          <li>
+            In a terminal, from the project folder:
+            <pre><code>npm install
+npm run build</code></pre>
+            This creates the loadable extension in the <span class="path">dist</span> folder.
+          </li>
+          <li>
+            Open Chrome and go to
+            <code>chrome://extensions</code>.
+          </li>
+          <li>
+            Turn on <strong>Developer mode</strong> (top right).
+          </li>
+          <li>
+            Click <strong>Load unpacked</strong> and select the <strong>dist</strong> directory
+            (inside your project folder — not the repository root).
+          </li>
+          <li>
+            Optional: pin the extension and open <strong>Options</strong> from the toolbar to
+            configure features.
+          </li>
+        </ol>
+        <p class="note">
+          After <code>git pull</code> or other updates, run <code>npm run build</code> again, then
+          use <strong>Reload</strong> on the extension card in <code>chrome://extensions</code>.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Privacy</h2>
+        <p style="margin: 0; color: var(--muted)">
+          Settings are stored with <code>chrome.storage</code>. The extension runs on Redtooth
+          venue admin pages only; it does not send your venue data to third-party servers.
+        </p>
+      </div>
+
+      <footer>
+        <p>
+          Source &amp; issues:
+          <a href="https://github.com/hopeypants/redtooth-td-assistant">GitHub repository</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
