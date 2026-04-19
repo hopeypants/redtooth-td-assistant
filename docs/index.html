@@ -3,217 +3,585 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Redtooth TD Assistant — Install</title>
+    <meta
+      name="description"
+      content="Redtooth TD Assistant — Chrome extension for Redtooth venue admin Tournament Director tools."
+    />
+    <title>Redtooth TD Assistant — Chrome Extension</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;700&family=Source+Sans+3:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --bg: #0f1419;
-        --card: #1a222d;
-        --text: #e8ecf0;
-        --muted: #9aa5b1;
-        --accent: #c94c4c;
-        --accent-dim: #8b3535;
-        --border: #2a3544;
-        --code-bg: #121920;
+        --bg: #0c0e12;
+        --bg-elevated: #13161d;
+        --surface: #1a1f28;
+        --border: #2a3140;
+        --text: #e6e9ef;
+        --muted: #8b95a8;
+        --accent: #e85d4c;
+        --accent-soft: rgba(232, 93, 76, 0.15);
+        --gold: #c9a227;
+        --nav-h: 3.25rem;
       }
 
-      * {
+      *,
+      *::before,
+      *::after {
         box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
       }
 
       body {
         margin: 0;
-        min-height: 100vh;
-        font-family: 'Source Sans 3', system-ui, sans-serif;
-        font-size: 17px;
-        line-height: 1.55;
+        font-family: Outfit, system-ui, sans-serif;
+        font-size: 1.02rem;
+        line-height: 1.6;
         color: var(--text);
         background: var(--bg);
         background-image:
-          radial-gradient(ellipse 120% 80% at 100% 0%, rgba(201, 76, 76, 0.12), transparent 50%),
-          radial-gradient(ellipse 80% 60% at 0% 100%, rgba(42, 53, 68, 0.5), transparent 45%);
+          radial-gradient(ellipse 100% 60% at 50% -20%, rgba(232, 93, 76, 0.14), transparent 55%),
+          radial-gradient(ellipse 80% 50% at 100% 50%, rgba(201, 162, 39, 0.06), transparent 45%);
+      }
+
+      a {
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* Nav */
+      .site-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        height: var(--nav-h);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem 1.25rem;
+        flex-wrap: wrap;
+        padding: 0 1rem;
+        background: rgba(12, 14, 18, 0.82);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .site-nav a {
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.88rem;
+        font-weight: 500;
+      }
+
+      .site-nav a:hover {
+        color: var(--text);
+        text-decoration: none;
+      }
+
+      section[id] {
+        scroll-margin-top: calc(var(--nav-h) + 1rem);
       }
 
       .wrap {
-        max-width: 40rem;
+        max-width: 52rem;
         margin: 0 auto;
-        padding: 2.5rem 1.25rem 4rem;
+        padding: 0 1.25rem 4rem;
       }
 
-      header {
-        margin-bottom: 2rem;
+      /* Hero */
+      .hero {
+        padding: calc(var(--nav-h) + 2.5rem) 0 3rem;
+        text-align: center;
       }
 
-      h1 {
-        font-family: Fraunces, Georgia, serif;
-        font-weight: 700;
-        font-size: clamp(1.75rem, 4vw, 2.15rem);
-        line-height: 1.2;
+      .hero-icon {
+        width: 96px;
+        height: 96px;
+        border-radius: 22px;
+        margin: 0 auto 1.25rem;
+        display: block;
+        box-shadow:
+          0 12px 40px rgba(0, 0, 0, 0.45),
+          0 0 0 1px rgba(255, 255, 255, 0.06);
+        object-fit: contain;
+        background: var(--surface);
+      }
+
+      .hero h1 {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: clamp(2.1rem, 5vw, 2.85rem);
+        font-weight: 400;
+        line-height: 1.15;
+        margin: 0 0 0.75rem;
         letter-spacing: -0.02em;
-        margin: 0 0 0.5rem;
+      }
+
+      .hero .lead {
+        max-width: 36rem;
+        margin: 0 auto 1.5rem;
+        color: var(--muted);
+        font-size: 1.12rem;
+      }
+
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+        margin-bottom: 1.75rem;
+      }
+
+      .badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: #ffb4a8;
+        border: 1px solid rgba(232, 93, 76, 0.35);
+      }
+
+      .badge.neutral {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--muted);
+        border-color: var(--border);
+      }
+
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.65rem 1.35rem;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-radius: 10px;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition:
+          transform 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+
+      .btn:hover {
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+
+      .btn-primary {
+        background: linear-gradient(165deg, #f06b5a, #c73d2e);
+        color: #fff;
+        box-shadow: 0 4px 20px rgba(199, 61, 46, 0.45);
+      }
+
+      .btn-primary:hover {
+        color: #fff;
+      }
+
+      .btn-ghost {
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      .btn-ghost:hover {
+        color: var(--text);
+        border-color: var(--muted);
+      }
+
+      /* Sections */
+      h2.section-title {
+        font-family: 'Instrument Serif', Georgia, serif;
+        font-size: 1.75rem;
+        font-weight: 400;
+        margin: 0 0 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
         color: var(--text);
       }
 
-      .tagline {
-        margin: 0;
-        color: var(--muted);
-        font-size: 1.05rem;
+      section.block {
+        margin-bottom: 3rem;
       }
 
-      .card {
-        background: var(--card);
+      .feature-grid {
+        display: grid;
+        gap: 1rem;
+      }
+
+      @media (min-width: 640px) {
+        .feature-grid.two {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .feature-card {
+        background: var(--bg-elevated);
         border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 1.35rem 1.5rem 1.5rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+        border-radius: 14px;
+        padding: 1.25rem 1.35rem;
       }
 
-      .card h2 {
-        font-family: Fraunces, Georgia, serif;
-        font-size: 1.2rem;
+      .feature-card h3 {
+        margin: 0 0 0.75rem;
+        font-size: 1.05rem;
         font-weight: 600;
-        margin: 0 0 1rem;
-        color: var(--accent);
+        color: var(--gold);
       }
 
-      ol.steps {
+      .feature-card ul {
         margin: 0;
-        padding-left: 1.35rem;
+        padding-left: 1.2rem;
+        color: var(--muted);
       }
 
-      ol.steps li {
-        margin-bottom: 0.85rem;
+      .feature-card li {
+        margin-bottom: 0.45rem;
       }
 
-      ol.steps li:last-child {
+      .feature-card li:last-child {
         margin-bottom: 0;
       }
 
-      code,
-      .path {
-        font-family: ui-monospace, 'Cascadia Code', monospace;
-        font-size: 0.9em;
-        background: var(--code-bg);
-        padding: 0.15em 0.45em;
-        border-radius: 6px;
+      .compat-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .compat-list li {
+        padding: 0.4rem 0.85rem;
+        background: var(--surface);
         border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .steps {
+        counter-reset: step;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .steps > li {
+        position: relative;
+        padding-left: 2.75rem;
+        margin-bottom: 1.1rem;
+        color: var(--muted);
+      }
+
+      .steps > li:last-child {
+        margin-bottom: 0;
+      }
+
+      .steps > li::before {
+        counter-increment: step;
+        content: counter(step);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 1.85rem;
+        height: 1.85rem;
+        line-height: 1.85rem;
+        text-align: center;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--bg);
+        background: var(--accent);
+        border-radius: 50%;
+      }
+
+      .callout {
+        margin-top: 1.25rem;
+        padding: 1rem 1.15rem;
+        background: rgba(201, 162, 39, 0.08);
+        border: 1px solid rgba(201, 162, 39, 0.25);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        color: #d4c4a0;
+      }
+
+      .callout strong {
+        color: var(--gold);
+      }
+
+      pre,
+      code {
+        font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+        font-size: 0.88em;
       }
 
       pre {
-        margin: 0.75rem 0 0;
+        margin: 0.65rem 0 0;
         padding: 1rem 1.1rem;
-        background: var(--code-bg);
+        background: #07080a;
         border: 1px solid var(--border);
-        border-radius: 8px;
+        border-radius: 10px;
         overflow-x: auto;
-        font-size: 0.88rem;
         line-height: 1.45;
+        color: #c8d0e0;
       }
 
       pre code {
-        padding: 0;
-        border: none;
         background: none;
+        padding: 0;
       }
 
-      .note {
-        margin-top: 1rem;
-        padding-top: 1rem;
+      .path {
+        color: #7dd3a0;
+      }
+
+      footer.site-footer {
+        margin-top: 3rem;
+        padding: 2rem 0;
         border-top: 1px solid var(--border);
-        font-size: 0.95rem;
+        text-align: center;
         color: var(--muted);
-      }
-
-      footer {
-        margin-top: 2rem;
-        padding-top: 1.25rem;
-        border-top: 1px solid var(--border);
         font-size: 0.9rem;
+      }
+
+      footer.site-footer .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem 1.25rem;
+        justify-content: center;
+        margin-bottom: 1rem;
+      }
+
+      footer.site-footer a {
         color: var(--muted);
+        font-weight: 500;
       }
 
-      footer a {
-        color: var(--accent);
-        text-decoration: none;
-        font-weight: 600;
-      }
-
-      footer a:hover {
-        text-decoration: underline;
+      footer.site-footer a:hover {
+        color: var(--text);
       }
     </style>
   </head>
   <body>
+    <nav class="site-nav" aria-label="Page sections">
+      <a href="#features">Features</a>
+      <a href="#compatibility">Compatibility</a>
+      <a href="#installation">Installation</a>
+      <a href="#updating">Updating</a>
+      <a href="#usage">Usage</a>
+      <a href="#privacy">Privacy</a>
+    </nav>
+
     <div class="wrap">
-      <header>
+      <header class="hero">
+        <img
+          class="hero-icon"
+          src="https://raw.githubusercontent.com/hopeypants/redtooth-td-assistant/main/icons/icon128.png"
+          width="96"
+          height="96"
+          alt=""
+        />
         <h1>Redtooth TD Assistant</h1>
-        <p class="tagline">
-          Install the Chrome extension from source — helpers for Redtooth venue admin
-          (Tournament Director).
+        <p class="lead">
+          Supercharge your <strong style="color: var(--text)">Redtooth venue admin</strong> workflow
+          with helpers for Tournament Directors — Edit Scores, lists, add-player tools, and more.
+          Built for <code style="color: #a8b8d8">redtoothpoker.com/venue_admin</code>.
         </p>
+        <div class="badges">
+          <span class="badge">Chrome extension</span>
+          <span class="badge">Manifest V3</span>
+          <span class="badge neutral">Open source</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#installation">Get started</a>
+          <a
+            class="btn btn-ghost"
+            href="https://github.com/hopeypants/redtooth-td-assistant"
+            target="_blank"
+            rel="noopener noreferrer"
+            >View on GitHub</a
+          >
+        </div>
       </header>
 
-      <div class="card">
-        <h2>Prerequisites</h2>
-        <p style="margin: 0">
-          <a href="https://nodejs.org/" style="color: var(--accent); font-weight: 600">Node.js</a>
-          18+ and
-          <strong>Google Chrome</strong> (or Chromium: Edge, Brave, etc.).
-        </p>
-      </div>
+      <section id="features" class="block">
+        <h2 class="section-title">Features</h2>
+        <div class="feature-grid two">
+          <div class="feature-card">
+            <h3>Edit Scores</h3>
+            <ul>
+              <li>Season week navigation (past / future)</li>
+              <li>Adjustable table row spacing</li>
+              <li>Floating &ldquo;Update&rdquo; button (position left or right)</li>
+              <li>Player archive &amp; live name filter (with optional Ctrl/Cmd+F focus)</li>
+              <li>Duplicate rank detection: highlight, prevent, or off</li>
+              <li>Optional filter to show only duplicate-rank rows</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Lists &amp; dates</h3>
+            <ul>
+              <li>List Season Score Weeks: friendlier date formats</li>
+              <li>Optional &ldquo;venue play day&rdquo; column</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Add Player</h3>
+            <ul>
+              <li>Membership number tools &amp; optional field highlights</li>
+              <li>Default address values when enabled</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h3>Options &amp; UX</h3>
+            <ul>
+              <li>Full options page (light / dark / system theme)</li>
+              <li>Optional sync of settings across Chrome profiles</li>
+              <li>&ldquo;Loaded&rdquo; badge on venue admin (with extension icon)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-      <div class="card">
-        <h2>Install (unpacked)</h2>
+      <section id="compatibility" class="block">
+        <h2 class="section-title">Browser compatibility</h2>
+        <p style="color: var(--muted); margin-top: 0">
+          Works on Chromium-based browsers with Manifest V3 support:
+        </p>
+        <ul class="compat-list">
+          <li>Google Chrome</li>
+          <li>Microsoft Edge</li>
+          <li>Brave</li>
+          <li>Opera</li>
+          <li>Vivaldi</li>
+        </ul>
+      </section>
+
+      <section id="installation" class="block">
+        <h2 class="section-title">Installation (from source)</h2>
+        <p style="color: var(--muted); margin-top: 0">
+          This extension is installed in <strong>developer mode</strong> from a local build. You need
+          <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> 18+.
+        </p>
+
         <ol class="steps">
           <li>
-            Clone the repository (or download a ZIP from GitHub and extract it).
+            <strong style="color: var(--text)">Get the code</strong><br />
+            <strong>Option A:</strong> On
+            <a
+              href="https://github.com/hopeypants/redtooth-td-assistant"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub</a
+            >, click <em>Code</em> &rarr; <em>Download ZIP</em>, then extract it.<br />
+            <strong>Option B:</strong> Clone with Git:
+            <pre><code>git clone https://github.com/hopeypants/redtooth-td-assistant.git
+cd redtooth-td-assistant</code></pre>
           </li>
           <li>
-            In a terminal, from the project folder:
+            <strong style="color: var(--text)">Install dependencies &amp; build</strong> (creates the
+            <span class="path">dist/</span> folder):
             <pre><code>npm install
 npm run build</code></pre>
-            This creates the loadable extension in the <span class="path">dist</span> folder.
           </li>
           <li>
-            Open Chrome and go to
-            <code>chrome://extensions</code>.
+            <strong style="color: var(--text)">Load in Chrome:</strong> open
+            <code>chrome://extensions</code> &rarr; enable <strong>Developer mode</strong> &rarr;
+            <strong>Load unpacked</strong> &rarr; select the <strong>dist</strong> folder (not the repo
+            root).
           </li>
           <li>
-            Turn on <strong>Developer mode</strong> (top right).
-          </li>
-          <li>
-            Click <strong>Load unpacked</strong> and select the <strong>dist</strong> directory
-            (inside your project folder — not the repository root).
-          </li>
-          <li>
-            Optional: pin the extension and open <strong>Options</strong> from the toolbar to
-            configure features.
+            <strong style="color: var(--text)">Other Chromium browsers:</strong> use their extensions
+            page (e.g. <code>edge://extensions</code>) the same way.
           </li>
         </ol>
-        <p class="note">
-          After <code>git pull</code> or other updates, run <code>npm run build</code> again, then
-          use <strong>Reload</strong> on the extension card in <code>chrome://extensions</code>.
-        </p>
-      </div>
 
-      <div class="card">
-        <h2>Privacy</h2>
-        <p style="margin: 0; color: var(--muted)">
-          Settings are stored with <code>chrome.storage</code>. The extension runs on Redtooth
-          venue admin pages only; it does not send your venue data to third-party servers.
-        </p>
-      </div>
+        <div class="callout">
+          <strong>Tip:</strong> Pin the extension from the puzzle-piece menu so the toolbar icon and
+          <strong>Options</strong> are easy to reach.
+        </div>
+      </section>
 
-      <footer>
-        <p>
-          Source &amp; issues:
-          <a href="https://github.com/hopeypants/redtooth-td-assistant">GitHub repository</a>
+      <section id="updating" class="block">
+        <h2 class="section-title">Updating</h2>
+        <ol class="steps">
+          <li>
+            Pull or re-download the latest code, then from the project folder run
+            <pre><code>npm install
+npm run build</code></pre>
+          </li>
+          <li>
+            Open <code>chrome://extensions</code>, find <strong>Redtooth TD Assistant</strong>, and
+            click <strong>Reload</strong> (circular arrow).
+          </li>
+        </ol>
+        <p style="color: var(--muted); font-size: 0.95rem">
+          Settings live in <code>chrome.storage</code> and usually persist across reloads. If you use
+          sync, updates follow your Google account like other extensions.
+        </p>
+      </section>
+
+      <section id="usage" class="block">
+        <h2 class="section-title">Usage</h2>
+        <ul style="color: var(--muted); padding-left: 1.2rem">
+          <li>Visit Redtooth <strong>venue admin</strong> as usual (Tournament Director area).</li>
+          <li>
+            Open <strong>Options</strong> from the extension icon to turn features on or off and tune
+            behaviour (Edit Scores, floating Update, duplicate ranks, archive, etc.).
+          </li>
+          <li>
+            Content scripts only run on
+            <code>https://www.redtoothpoker.com/venue_admin/*</code> — there is nothing to configure on
+            unrelated sites.
+          </li>
+        </ul>
+      </section>
+
+      <section id="privacy" class="block">
+        <h2 class="section-title">Privacy</h2>
+        <p style="color: var(--muted); margin: 0">
+          Settings and optional archive data stay in your browser via
+          <code>chrome.storage</code>. The extension does not send your venue or player data to
+          third-party servers — it only enhances pages you already open on Redtooth.
+        </p>
+      </section>
+
+      <footer class="site-footer">
+        <div class="links">
+          <a href="https://github.com/hopeypants/redtooth-td-assistant" target="_blank" rel="noopener noreferrer"
+            >Repository</a
+          >
+          <a href="https://github.com/hopeypants/redtooth-td-assistant/issues" target="_blank" rel="noopener noreferrer"
+            >Issues</a
+          >
+        </div>
+        <p style="margin: 0; font-size: 0.85rem">
+          Redtooth TD Assistant &middot; Not affiliated with Redtooth Poker — an independent community
+          tool.
         </p>
       </footer>
     </div>
