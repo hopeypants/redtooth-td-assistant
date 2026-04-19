@@ -15,16 +15,19 @@
   ],
   "web_accessible_resources": [
     {
+      "matches": [
+        "https://www.redtoothpoker.com/*"
+      ],
       "resources": [
         "icons/icon16.png",
         "icons/icon24.png",
         "icons/icon32.png",
         "icons/icon48.png",
-        "icons/icon128.png"
+        "icons/icon128.png",
+        "assets/week-commencing-date-format-DSIu2PQk.js",
+        "assets/venue-admin.ts-DsMdrrFA.js"
       ],
-      "matches": [
-        "https://www.redtoothpoker.com/*"
-      ]
+      "use_dynamic_url": false
     }
   ],
   "action": {
@@ -38,11 +41,11 @@
   },
   "content_scripts": [
     {
+      "js": [
+        "assets/venue-admin.ts-loader-Dr5mlsdk.js"
+      ],
       "matches": [
         "https://www.redtoothpoker.com/venue_admin/*"
-      ],
-      "js": [
-        "src/content/venue-admin.ts"
       ],
       "run_at": "document_idle"
     }
