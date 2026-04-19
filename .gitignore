@@ -1,0 +1,4 @@
+node_modules/
+dist/
+*.local
+extension-dev-private.pem

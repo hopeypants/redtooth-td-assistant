@@ -1,0 +1,25 @@
+{
+  "name": "redtooth-td-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node scripts/bump-manifest-version.mjs",
+    "build": "vite build",
+    "check": "tsc --noEmit",
+    "icons": "node scripts/build-icons.mjs",
+    "generate-extension-key": "node scripts/generate-extension-key.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.4.0",
+    "@types/chrome": "^0.1.40",
+    "sharp": "^0.34.5",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.8"
+  }
+}
