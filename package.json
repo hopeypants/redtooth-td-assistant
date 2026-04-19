@@ -12,8 +12,8 @@
     "generate-extension-key": "node scripts/generate-extension-key.mjs"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "hopeypants",
+  "license": "MIT",
   "description": "",
   "devDependencies": {
     "@crxjs/vite-plugin": "^2.4.0",

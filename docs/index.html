@@ -417,7 +417,14 @@
           <span class="badge neutral">Open source</span>
         </div>
         <div class="cta-row">
-          <a class="btn btn-primary" href="#installation">Get started</a>
+          <a
+            class="btn btn-primary"
+            href="https://github.com/hopeypants/redtooth-td-assistant/releases/latest"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Download latest release</a
+          >
+          <a class="btn btn-ghost" href="#installation">How to install</a>
           <a
             class="btn btn-ghost"
             href="https://github.com/hopeypants/redtooth-td-assistant"
@@ -482,41 +489,80 @@
       </section>
 
       <section id="installation" class="block">
-        <h2 class="section-title">Installation (from source)</h2>
+        <h2 class="section-title">Installation</h2>
         <p style="color: var(--muted); margin-top: 0">
-          This extension is installed in <strong>developer mode</strong> from a local build. You need
-          <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> 18+.
+          The extension is loaded in <strong>developer mode</strong> (there is no Chrome Web Store
+          listing yet). The easiest path is a pre-built zip from
+          <a
+            href="https://github.com/hopeypants/redtooth-td-assistant/releases/latest"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub Releases</a
+          >.
         </p>
 
+        <h3 style="font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.75rem; color: var(--text)">
+          From a release (recommended)
+        </h3>
+        <p style="color: var(--muted); margin-top: 0">
+          No Node.js or Git required. Each release attaches a <strong>.zip</strong> under
+          <strong>Assets</strong>.
+        </p>
         <ol class="steps">
           <li>
-            <strong style="color: var(--text)">Get the code</strong><br />
-            <strong>Option A:</strong> On
+            Open
+            <a
+              href="https://github.com/hopeypants/redtooth-td-assistant/releases/latest"
+              target="_blank"
+              rel="noopener noreferrer"
+              >the latest release</a
+            >
+            and download the extension zip (e.g. <span class="path">redtooth-td-assistant-v1.0.0.zip</span>).
+          </li>
+          <li>
+            <strong style="color: var(--text)">Extract</strong> the zip. Use the folder whose root
+            contains <span class="path">manifest.json</span> (if the zip wraps one inner folder, choose
+            that folder).
+          </li>
+          <li>
+            <strong style="color: var(--text)">Load in Chrome:</strong> open
+            <code>chrome://extensions</code> &rarr; enable <strong>Developer mode</strong> &rarr;
+            <strong>Load unpacked</strong> &rarr; select that folder.
+          </li>
+          <li>
+            <strong style="color: var(--text)">Other Chromium browsers:</strong> use their extensions
+            page (e.g. <code>edge://extensions</code>) the same way.
+          </li>
+        </ol>
+
+        <h3 style="font-size: 1.15rem; font-weight: 600; margin: 1.75rem 0 0.75rem; color: var(--text)">
+          Build from source (developers)
+        </h3>
+        <p style="color: var(--muted); margin-top: 0">
+          Requires <a href="https://nodejs.org/" target="_blank" rel="noopener">Node.js</a> 18+.
+        </p>
+        <ol class="steps">
+          <li>
+            <strong style="color: var(--text)">Get the code:</strong> clone or download from
             <a
               href="https://github.com/hopeypants/redtooth-td-assistant"
               target="_blank"
               rel="noopener noreferrer"
               >GitHub</a
-            >, click <em>Code</em> &rarr; <em>Download ZIP</em>, then extract it.<br />
-            <strong>Option B:</strong> Clone with Git:
+            >
+            (<em>Code</em> &rarr; <em>Download ZIP</em> works if you do not use Git).
             <pre><code>git clone https://github.com/hopeypants/redtooth-td-assistant.git
 cd redtooth-td-assistant</code></pre>
           </li>
           <li>
-            <strong style="color: var(--text)">Install dependencies &amp; build</strong> (creates the
-            <span class="path">dist/</span> folder):
+            <strong style="color: var(--text)">Install dependencies &amp; build</strong> (creates
+            <span class="path">dist/</span>):
             <pre><code>npm install
 npm run build</code></pre>
           </li>
           <li>
-            <strong style="color: var(--text)">Load in Chrome:</strong> open
-            <code>chrome://extensions</code> &rarr; enable <strong>Developer mode</strong> &rarr;
-            <strong>Load unpacked</strong> &rarr; select the <strong>dist</strong> folder (not the repo
-            root).
-          </li>
-          <li>
-            <strong style="color: var(--text)">Other Chromium browsers:</strong> use their extensions
-            page (e.g. <code>edge://extensions</code>) the same way.
+            <strong style="color: var(--text)">Load unpacked</strong> and select the
+            <strong>dist</strong> folder (not the repo root).
           </li>
         </ol>
 
@@ -528,18 +574,28 @@ npm run build</code></pre>
 
       <section id="updating" class="block">
         <h2 class="section-title">Updating</h2>
-        <ol class="steps">
-          <li>
-            Pull or re-download the latest code, then from the project folder run
-            <pre><code>npm install
+        <p style="color: var(--muted); margin-top: 0">
+          <strong style="color: var(--text)">If you installed from a release:</strong> download the
+          newer zip from
+          <a
+            href="https://github.com/hopeypants/redtooth-td-assistant/releases/latest"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Releases</a
+          >, extract it (you can replace the old folder), then on <code>chrome://extensions</code> click
+          <strong>Reload</strong> on Redtooth TD Assistant.
+        </p>
+        <p style="color: var(--muted); margin: 1rem 0 0">
+          <strong style="color: var(--text)">If you build from source:</strong> pull or re-download the
+          repo, then from the project folder run
+        </p>
+        <pre><code>npm install
 npm run build</code></pre>
-          </li>
-          <li>
-            Open <code>chrome://extensions</code>, find <strong>Redtooth TD Assistant</strong>, and
-            click <strong>Reload</strong> (circular arrow).
-          </li>
-        </ol>
-        <p style="color: var(--muted); font-size: 0.95rem">
+        <p style="color: var(--muted); margin: 0">
+          Open <code>chrome://extensions</code>, find <strong>Redtooth TD Assistant</strong>, and click
+          <strong>Reload</strong>.
+        </p>
+        <p style="color: var(--muted); font-size: 0.95rem; margin-top: 1rem">
           Settings live in <code>chrome.storage</code> and usually persist across reloads. If you use
           sync, updates follow your Google account like other extensions.
         </p>
@@ -572,11 +628,23 @@ npm run build</code></pre>
 
       <footer class="site-footer">
         <div class="links">
+          <a
+            href="https://github.com/hopeypants/redtooth-td-assistant/releases/latest"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Releases</a
+          >
           <a href="https://github.com/hopeypants/redtooth-td-assistant" target="_blank" rel="noopener noreferrer"
             >Repository</a
           >
           <a href="https://github.com/hopeypants/redtooth-td-assistant/issues" target="_blank" rel="noopener noreferrer"
             >Issues</a
+          >
+          <a
+            href="https://github.com/hopeypants/redtooth-td-assistant/blob/main/LICENSE"
+            target="_blank"
+            rel="noopener noreferrer"
+            >License (MIT)</a
           >
         </div>
         <p style="margin: 0; font-size: 0.85rem">

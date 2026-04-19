@@ -12,40 +12,40 @@ Data stays in the browser (`chrome.storage`); the extension does not send your v
 
 ## Requirements
 
-- **Node.js** 18+ (for building from source)
 - **Google Chrome** or another **Chromium** browser (Edge, Brave, etc.)
 
-## Install from source (developers & testers)
+## Install (recommended): GitHub Release
 
-1. Clone this repository:
+Built extensions are published as a **`.zip`** on [GitHub Releases](https://github.com/hopeypants/redtooth-td-assistant/releases/latest). You do **not** need Node.js or Git.
 
-   ```bash
-   git clone https://github.com/hopeypants/redtooth-td-assistant.git
-   cd redtooth-td-assistant
-   ```
+1. Open **[Latest release](https://github.com/hopeypants/redtooth-td-assistant/releases/latest)**.
+2. Under **Assets**, download the **`.zip`** (e.g. `redtooth-td-assistant-v1.0.0.zip`).
+3. Extract the zip so you have a **folder** whose root contains `manifest.json` (if the zip contains a single inner folder, use that folder).
+4. In Chrome, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and select that folder.
+5. Optional: open the extension’s **Options** from the toolbar to change defaults.
 
-   (Use your fork’s URL instead if you forked the repo.)
+**Updating:** Download a newer release zip, extract it (or replace the old folder), then on `chrome://extensions` click **Reload** on Redtooth TD Assistant.
 
-2. Install dependencies and build:
+## Build from source (developers)
 
-   ```bash
-   npm install
-   npm run build
-   ```
+Requires **Node.js** 18+.
 
-   This runs the Vite/`@crxjs` pipeline and writes the loadable extension to **`dist/`**.
+```bash
+git clone https://github.com/hopeypants/redtooth-td-assistant.git
+cd redtooth-td-assistant
+npm install
+npm run build
+```
 
-3. In Chrome, open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and select the **`dist`** folder inside the project (not the repo root).
-
-4. Open the extension’s options from the toolbar if you want to change defaults (e.g. which features are on).
+Then **Load unpacked** and select the **`dist`** folder. Use your fork’s clone URL if you forked the repo.
 
 ### Scripts
 
-| Command        | Purpose                          |
-|----------------|----------------------------------|
-| `npm run build` | Production build → `dist/`       |
-| `npm run check` | TypeScript (`tsc --noEmit`)      |
-| `npm run dev`   | Vite dev (extension development) |
+| Command         | Purpose                     |
+|-----------------|-----------------------------|
+| `npm run build` | Production build → `dist/`  |
+| `npm run check` | TypeScript (`tsc --noEmit`) |
+| `npm run dev`   | Vite dev (extension dev)    |
 
 ## Permissions
 
@@ -54,10 +54,16 @@ Data stays in the browser (`chrome.storage`); the extension does not send your v
 
 ## Documentation site
 
-A static install guide is in **`docs/`** and can be published with [GitHub Pages](https://docs.github.com/pages/) (e.g. **Settings → Pages → Branch `main` / folder `/docs`**).
+Static pages in **`docs/`** can be published with [GitHub Pages](https://docs.github.com/pages/) (e.g. **Settings → Pages → Branch `main` / folder `/docs`**).
 
-Live URL (after you enable Pages): `https://hopeypants.github.io/redtooth-td-assistant/`
+Live URL: `https://hopeypants.github.io/redtooth-td-assistant/`
+
+## Creating a GitHub release (maintainers)
+
+1. `npm run build`
+2. Create a zip of the **`dist`** output. Easiest: zip the **`dist` folder itself** (so after extract, users open the folder that contains `manifest.json`). Alternatively zip **everything inside** `dist/` so the archive root is the extension files.
+3. On GitHub: **Releases → Draft a new release**, set the tag (e.g. `v1.0.0`), upload the zip under **Assets**, publish.
 
 ## License
 
-Add a `LICENSE` file in the repo when you choose a license (e.g. MIT).
+[MIT](LICENSE) © hopeypants
