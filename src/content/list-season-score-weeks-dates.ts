@@ -122,7 +122,7 @@ function walkAndApply(
   }
 }
 
-/** “Week commencing” → “Day” when showing venue play day. */
+/** “Week commencing” → “Day” when showing venue game day. */
 function applyWeekCommencingColumnHeading(useDayLabel: boolean): void {
   const ths = document.querySelectorAll<HTMLElement>('th')
   for (const th of ths) {

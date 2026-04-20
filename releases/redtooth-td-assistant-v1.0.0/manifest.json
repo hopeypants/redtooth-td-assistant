@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoxK66TsY8mGPOSD91ll35CsLPjpsDOX8K7dwyQ3wJ/lBaVlJbEJQsEYvsdXixgsQ1+flICRFDb6hMF2ILwWhDECE+KsQkKYLAWkB+QxuHjJMJqYjVMzTMnBOe0+nMNhZDoBuloN+t+9B2srfYOx4b/w4mF4TEJkfwXHtQSoWMjPWQ+Q6dSrGIUism2DUg6pxaTDmNewzUJt48Ok4c3IbeVr+1O3QN+G47NdK1nheW8C23/JGv8G+lQVOQ7/qlrzrhm6FwEubkkaifBcboez/Gfw332vdP5Shz/xSnJ+EpDzlQiA9trF/UIwaA2myXVvHGewrU6NGNYBENJcqUaq8xQIDAQAB",
   "name": "Redtooth TD Assistant",
-  "version": "0.8.118",
+  "version": "0.8.122",
   "description": "Adds functionality to the Redtooth venue admin Tournament Director area.",
   "icons": {
     "16": "icons/icon16.png",
@@ -24,8 +24,8 @@
         "icons/icon32.png",
         "icons/icon48.png",
         "icons/icon128.png",
-        "assets/week-commencing-date-format-DSIu2PQk.js",
-        "assets/venue-admin.ts-DsMdrrFA.js"
+        "assets/week-commencing-date-format-D1ctT-v2.js",
+        "assets/venue-admin.ts-DSbTLnfq.js"
       ],
       "use_dynamic_url": false
     }
@@ -42,7 +42,7 @@
   "content_scripts": [
     {
       "js": [
-        "assets/venue-admin.ts-loader-Dr5mlsdk.js"
+        "assets/venue-admin.ts-loader-CDhljb6P.js"
       ],
       "matches": [
         "https://www.redtoothpoker.com/venue_admin/*"

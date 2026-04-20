@@ -960,21 +960,13 @@
         margin-bottom: 10px;
       }
 
-      .about-toggle-wrap {
-        margin-top: 14px;
-        padding-top: 14px;
-        border-top: 0.5px solid var(--separator);
-      }
-
-      .about-toggle-wrap .setting-row {
-        padding-left: 0;
-        padding-right: 0;
-        min-height: 44px;
+      #header-buy-me-a-coffee-wrap[hidden] {
+        display: none !important;
       }
 
     </style>
-    <script type="module" crossorigin src="/assets/options.html-ALzJ8YWC.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/week-commencing-date-format-DSIu2PQk.js">
+    <script type="module" crossorigin src="/assets/options.html-Bztm4uvr.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/week-commencing-date-format-D1ctT-v2.js">
   </head>
   <body>
     <main class="settings">
@@ -992,21 +984,23 @@
           <h1 class="app-title">Redtooth TD Assistant</h1>
         </div>
         <div class="header-links">
-          <a
-            href="https://buymeacoffee.com/hopeypants"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="header-link"
-            title="Buy me a coffee"
-          >
-            <img
-              src="https://studio.buymeacoffee.com/assets/img/bmc-meta-new/new/favicon.ico"
-              alt=""
-              width="13"
-              height="13"
-            />
-            Buy me a coffee
-          </a>
+          <span id="header-buy-me-a-coffee-wrap">
+            <a
+              href="https://buymeacoffee.com/hopeypants"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="header-link"
+              title="Buy me a coffee"
+            >
+              <img
+                src="https://studio.buymeacoffee.com/assets/img/bmc-meta-new/new/favicon.ico"
+                alt=""
+                width="13"
+                height="13"
+              />
+              Buy me a coffee
+            </a>
+          </span>
           <a
           href="https://github.com/hopeypants/redtooth-td-assistant"
           target="_blank"
@@ -2105,29 +2099,55 @@
             If something isn't working as expected, try turning off Redtooth TD Assistant
             below and refreshing the page. If the problem goes away, please <a href="https://docs.google.com/forms/d/e/1FAIpQLSeCyNUfIwVIp83ZT_porHyH4uHCiyXrnXdgQRCzU1ZsyjBeig/viewform?usp=publish-editor" target="_blank">report the issue</a> so it can be fixed.
           </p>
-          <div class="about-toggle-wrap">
-            <div class="setting-row">
-              <span class="label label-with-info">
-                <span id="lbl-assistant-about">Enable Redtooth TD Assistant</span>
-                <button
-                  type="button"
-                  class="feature-info"
-                  title="Same as General: turns all extension features on or off for Redtooth Tournament Director pages in this browser."
-                  aria-label="Help: Enable Redtooth TD Assistant"
-                >
-                  i
-                </button>
-              </span>
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  id="assistant-enabled-about"
-                  role="switch"
-                  aria-labelledby="lbl-assistant-about"
-                />
-                <span class="track" aria-hidden="true"><span class="thumb"></span></span>
-              </label>
-            </div>
+        </div>
+
+        <div class="card">
+          <div class="setting-row">
+            <span class="label label-with-info">
+              <span id="lbl-assistant-about">Enable Redtooth TD Assistant</span>
+              <button
+                type="button"
+                class="feature-info"
+                title="Same as General: turns all extension features on or off for Redtooth Tournament Director pages in this browser."
+                aria-label="Help: Enable Redtooth TD Assistant"
+              >
+                i
+              </button>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                id="assistant-enabled-about"
+                role="switch"
+                aria-labelledby="lbl-assistant-about"
+              />
+              <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="setting-row">
+            <span class="label label-with-info">
+              <span id="lbl-show-buy-me-a-coffee-header">Show &ldquo;Buy me a coffee&rdquo; in header</span>
+              <button
+                type="button"
+                class="feature-info"
+                title="When off, the Buy me a coffee link is hidden in the options header. GitHub and feedback links stay visible."
+                aria-label="Help: Show Buy me a coffee in header"
+              >
+                i
+              </button>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                id="show-buy-me-a-coffee-header"
+                role="switch"
+                aria-labelledby="lbl-show-buy-me-a-coffee-header"
+              />
+              <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            </label>
           </div>
         </div>
       </div>

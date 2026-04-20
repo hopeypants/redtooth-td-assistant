@@ -109,6 +109,12 @@ const nameFilterIncludeArchivedRowEl = document.querySelector<HTMLDivElement>(
 )
 const showLoadedBadgeCb =
   document.querySelector<HTMLInputElement>('#show-loaded-badge')
+const headerBuyMeACoffeeWrapEl = document.querySelector<HTMLSpanElement>(
+  '#header-buy-me-a-coffee-wrap',
+)
+const showBuyMeACoffeeHeaderCb = document.querySelector<HTMLInputElement>(
+  '#show-buy-me-a-coffee-header',
+)
 const syncSettingsCb =
   document.querySelector<HTMLInputElement>('#sync-settings-enabled')
 const addPlayersCb = document.querySelector<HTMLInputElement>('#add-players-enabled')
@@ -207,6 +213,8 @@ if (
   !editScoresPlayerNameFilterIncludeArchivedCb ||
   !nameFilterIncludeArchivedRowEl ||
   !showLoadedBadgeCb ||
+  !headerBuyMeACoffeeWrapEl ||
+  !showBuyMeACoffeeHeaderCb ||
   !syncSettingsCb ||
   !addPlayersCb ||
   !addPlayerHighlightRequiredCb ||
@@ -290,6 +298,8 @@ const editScoresPlayerNameFilterIncludeArchivedInput =
   editScoresPlayerNameFilterIncludeArchivedCb
 const nameFilterIncludeArchivedRow = nameFilterIncludeArchivedRowEl!
 const showLoadedBadgeInput = showLoadedBadgeCb
+const headerBuyMeACoffeeWrap = headerBuyMeACoffeeWrapEl!
+const showBuyMeACoffeeHeaderInput = showBuyMeACoffeeHeaderCb
 const syncSettingsInput = syncSettingsCb
 const addPlayersInput = addPlayersCb
 const addPlayerHighlightRequiredInput = addPlayerHighlightRequiredCb
@@ -333,6 +343,10 @@ function refreshAppliedTheme(): void {
   syncSystemThemeListener(themePref, () => {
     applyDocumentTheme(effectiveTheme(themePref))
   })
+}
+
+function applyBuyMeACoffeeHeaderVisibility(show: boolean): void {
+  headerBuyMeACoffeeWrap.hidden = !show
 }
 
 function syncThemeSegment(): void {
@@ -874,6 +888,14 @@ function load(): void {
     showLoadedBadgeInput.checked =
       typeof showBadge === 'boolean' ? showBadge : STORAGE_DEFAULTS.showLoadedBadge
 
+    const showBmc = items[STORAGE_KEYS.showBuyMeACoffeeHeaderLink]
+    const bmcOn =
+      typeof showBmc === 'boolean'
+        ? showBmc
+        : STORAGE_DEFAULTS.showBuyMeACoffeeHeaderLink
+    showBuyMeACoffeeHeaderInput.checked = bmcOn
+    applyBuyMeACoffeeHeaderVisibility(bmcOn)
+
     const apEn = items[STORAGE_KEYS.addPlayersEnabled]
     addPlayersInput.checked =
       typeof apEn === 'boolean' ? apEn : STORAGE_DEFAULTS.addPlayersEnabled
@@ -1189,6 +1211,12 @@ editScoresPlayerNameFilterIncludeArchivedInput.addEventListener('change', () => 
 
 showLoadedBadgeInput.addEventListener('change', () => {
   save({ [STORAGE_KEYS.showLoadedBadge]: showLoadedBadgeInput.checked })
+})
+
+showBuyMeACoffeeHeaderInput.addEventListener('change', () => {
+  const on = showBuyMeACoffeeHeaderInput.checked
+  save({ [STORAGE_KEYS.showBuyMeACoffeeHeaderLink]: on })
+  applyBuyMeACoffeeHeaderVisibility(on)
 })
 
 addPlayersInput.addEventListener('change', () => {

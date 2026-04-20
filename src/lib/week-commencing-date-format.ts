@@ -120,7 +120,7 @@ export function getLocalCalendarDateYmd(ref: Date = new Date()): string {
 
 /**
  * Redtooth’s cell value is treated as a date in the Sun–Sat week; we normalise to that
- * week’s Sunday, then move to the venue’s play day (0 = Sun … 6 = Sat).
+ * week’s Sunday, then move to the venue’s game day (0 = Sun … 6 = Sat).
  */
 export function shiftWeekCommencingToVenuePlayDay(
   isoYmd: string,
@@ -144,7 +144,7 @@ export function shiftWeekCommencingToVenuePlayDay(
   return `${y2}-${String(mo2).padStart(2, '0')}-${String(d2).padStart(2, '0')}`
 }
 
-/** Preview / options: example date for format dropdown (today vs venue play day in current Redtooth week). */
+/** Preview / options: example date for format dropdown (today vs venue game day in current Redtooth week). */
 export function getListSeasonScoreWeeksFormatExampleIsoYmd(
   venuePlayDayEnabled: boolean,
   playDayOfWeek: number,

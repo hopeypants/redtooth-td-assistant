@@ -41,6 +41,8 @@ export const STORAGE_KEYS = {
   settingsUiTheme: 'settingsUiTheme',
   /** Options page: last focused tab button `id` (e.g. `tab-general`). */
   settingsActiveTabId: 'settingsActiveTabId',
+  /** Options page header: show the Buy me a coffee link (GitHub / feedback stay visible). */
+  showBuyMeACoffeeHeaderLink: 'showBuyMeACoffeeHeaderLink',
   /** Add player / membership number tools */
   addPlayersEnabled: 'addPlayersEnabled',
   /** Digit count for membership numbers (full N-digit range: 10^(N−1)…10^N−1). */
@@ -76,10 +78,10 @@ export const STORAGE_KEYS = {
   listSeasonScoreWeeksDateFormat: 'listSeasonScoreWeeksDateFormat',
   /**
    * List Season Score Weeks: treat Redtooth’s date as a day in the Sun–Sat week and show
-   * the venue’s play day instead; column heading becomes “Day”.
+   * the venue’s game day instead; column heading becomes “Day”.
    */
   listSeasonScoreWeeksVenuePlayDayEnabled: 'listSeasonScoreWeeksVenuePlayDayEnabled',
-  /** 0 = Sunday … 6 = Saturday — day the venue plays (same Sun–Sat week as Redtooth’s date). */
+  /** 0 = Sunday … 6 = Saturday — venue’s game day (same Sun–Sat week as Redtooth’s date). */
   listSeasonScoreWeeksPlayDayOfWeek: 'listSeasonScoreWeeksPlayDayOfWeek',
 } as const
 
@@ -107,6 +109,7 @@ export const STORAGE_DEFAULTS = {
   showLoadedBadge: true,
   settingsUiTheme: 'system' as const,
   settingsActiveTabId: 'tab-general',
+  showBuyMeACoffeeHeaderLink: true,
   addPlayersEnabled: true,
   addPlayerMembershipDigits: 6,
   addPlayerMembershipMinValue: 100_000,
@@ -126,7 +129,7 @@ export const STORAGE_DEFAULTS = {
   listSeasonScoreWeeksDateFormatEnabled: true,
   /** Default: weekday, day, full month, year (UK), e.g. Wednesday, 8 April 2026 */
   listSeasonScoreWeeksDateFormat: 'EEEE_comma_d_MMMM_yyyy',
-  /** New installs: venue play day off; use with options HTML defaults for first paint. */
+  /** New installs: venue game day off; use with options HTML defaults for first paint. */
   listSeasonScoreWeeksVenuePlayDayEnabled: false,
   /** Sunday */
   listSeasonScoreWeeksPlayDayOfWeek: 0,

@@ -5,7 +5,7 @@ First public release. Chrome extension (**Manifest V3**) for Redtooth **venue ad
 ### Highlights
 
 - **Edit Scores** — Season week navigation, adjustable table row spacing, floating **Update** button (position left or right), **player archive** with live name filter (optional Ctrl/Cmd+F focus), **duplicate rank** handling (highlight, prevent, or off) with optional filter for duplicate rows.
-- **Lists & dates** — Friendlier dates on **List Season Score Weeks**, optional venue play-day column.
+- **Lists & dates** — Friendlier dates on **List Season Score Weeks**, optional venue game-day column.
 - **Add Player** — Membership number helpers and optional field highlights, default address values when enabled.
 - **Options** — Full options page (light / dark / system theme), toggles per feature area, optional **sync** of settings across Chrome profiles.
 - **Venue admin UX** — Optional **“Loaded”** badge on venue admin (uses extension icons via `web_accessible_resources`).
