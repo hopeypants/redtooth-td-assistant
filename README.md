@@ -4,8 +4,9 @@ Chrome extension that adds helpers to the **Redtooth** venue admin **Tournament 
 
 ## Features (overview)
 
-- **Edit Scores** — Week navigation, table spacing, floating “Update” button, player archive & name filter, optional duplicate-rank highlighting or prevention, and related UI tweaks.
-- **Other venue admin pages** — Optional tools where enabled (e.g. List Season Score Weeks dates, Add Player helpers).
+- **Edit Ranks** — Week navigation, table spacing, floating “Update” button, player archive & name filter, duplicate-rank highlighting/prevention, rank header count, optional missing-ranks panel, and related UI tweaks.
+- **Login helper** — Optional redirect from Redtooth’s login chooser to Venue / TD / Player login pages, with per-page credentials and optional auto-login.
+- **Other venue admin pages** — Optional tools where enabled (e.g. List Season Score Weeks dates, Add Player helpers/default field values).
 - **Options** — Toggle features, theme for the options page, and settings that can sync across Chrome profiles when enabled.
 
 Data stays in the browser (`chrome.storage`); the extension does not send your venue data to third-party servers.
@@ -25,6 +26,19 @@ Built extensions are published as a **`.zip`** on [GitHub Releases](https://gith
 5. Optional: open the extension’s **Options** from the toolbar to change defaults.
 
 **Updating:** Download a newer release zip, extract it (or replace the old folder), then on `chrome://extensions` click **Reload** on Redtooth TD Assistant.
+
+## What changed since `v1.0.0`
+
+- Added **Login page** settings in General: target page dropdown (Venue / TD / Player), per-page credentials, and auto-login toggle.
+- Added safeguards to avoid immediate re-login loops after logout/error.
+- Improved Edit Ranks workflow with:
+  - duplicate-rank checks after leaving rank controls,
+  - focused-row highlighting while tabbing rank selects,
+  - rank header count (`Rank (xx players)`),
+  - optional **Highlight missing ranks** panel (with player-count warning logic).
+- Improved duplicate-row filtering so “Show duplicate rows” clears the active name filter first.
+- Improved Add Player reliability: default address fields are re-applied on save/submit (no page refresh needed).
+- Multiple responsive/layout/accessibility refinements across archive/filter/navigation controls.
 
 ## Build from source (developers)
 
@@ -50,7 +64,11 @@ Then **Load unpacked** and select the **`dist`** folder. Use your fork’s clone
 ## Permissions
 
 - **`storage`** — Saves your settings (and optional sync via Chrome).
-- **Host access** — Injected only on `https://www.redtoothpoker.com/venue_admin/*` (see `manifest.json`).
+- **Host access** — Injected on:
+  - `https://www.redtoothpoker.com/venue_admin/*`
+  - `https://www.redtoothpoker.com/login*`
+  - `https://www.redtoothpoker.com/player/login*`
+  (see `manifest.json`).
 
 ## Documentation site
 
