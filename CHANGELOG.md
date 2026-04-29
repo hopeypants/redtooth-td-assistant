@@ -1,3 +1,19 @@
+## v1.0.33
+
+Quality-of-life and workflow updates across login automation, Edit Ranks usability, and Add Player reliability.
+
+### Highlights
+
+- **Login page helper** — Added General settings to redirect `https://www.redtoothpoker.com/login` to Venue/TD/Player login pages, with per-page credentials, optional auto-login toggle, and loop safeguards after logout/errors.
+- **Edit Ranks improvements** — Added `Rank (xx players)` header count, focused-row highlight while tabbing rank selects, and improved duplicate-rank filtering (including clearing name filter when showing duplicate rows).
+- **Missing ranks panel** — Added optional **Highlight missing ranks** toggle in the Ranks tab and a panel that shows missing ranks, optional **Number of players**, and a warning when entered player count is below highest rank entered.
+- **Archive/filter UX** — Improved responsive layout, control ordering, spacing consistency, and tab-order behavior for archive/restore and clear-filter controls.
+- **Add Player reliability** — Default address values now re-apply right before Save/submit, so blank defaults fill without requiring a page refresh.
+
+### Notes
+
+- User-facing terminology has been shifted toward **Rank/Ranks** in updated UI areas while keeping existing Redtooth route/key compatibility.
+
 ## v1.0.0
 
 First public release. Chrome extension (**Manifest V3**) for Redtooth **venue admin** / Tournament Director pages at `https://www.redtoothpoker.com/venue_admin/*`.
