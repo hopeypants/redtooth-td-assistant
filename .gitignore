@@ -1,5 +1,6 @@
 dist/
 node_modules/
 promo/
+releases/
 *.local
 extension-dev-private.pem
