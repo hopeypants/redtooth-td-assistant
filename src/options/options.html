@@ -691,6 +691,14 @@
         color: var(--label);
       }
 
+      .row-num input.login-credential-input {
+        width: 15rem;
+      }
+
+      .login-credentials-row[hidden] {
+        display: none !important;
+      }
+
       .row-num input.add-player-value:focus {
         outline: none;
         box-shadow: 0 0 0 3px var(--focus);
@@ -1069,7 +1077,7 @@
           aria-controls="panel-manage-scores"
           tabindex="-1"
         >
-          Scores
+          Ranks
         </button>
         <button
           type="button"
@@ -1163,6 +1171,137 @@
               >
                 Dark
               </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="setting-row">
+            <span class="label label-with-info">
+              <span id="lbl-login-page">Login page</span>
+              <button
+                type="button"
+                class="feature-info"
+                title="When enabled, opening Redtooth's main login chooser redirects straight to your selected login page. If username/password are filled in, they are auto-entered and submitted on that page."
+                aria-label="Help: Login page"
+              >
+                i
+              </button>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                id="login-page-enabled"
+                role="switch"
+                aria-labelledby="lbl-login-page"
+              />
+              <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            </label>
+          </div>
+          <div id="login-page-subsettings" class="subsettings" hidden>
+            <div class="row-num">
+              <div class="label-with-info">
+                <label class="label" for="login-page-target">Always open</label>
+                <button
+                  type="button"
+                  class="feature-info"
+                  title="Choose which login page to use when you click Login on redtoothpoker.com."
+                  aria-label="Help: Login page target"
+                >
+                  i
+                </button>
+              </div>
+              <select
+                id="login-page-target"
+                class="floating-update-position-select"
+                aria-label="Preferred login page"
+              >
+                <option value="venue">Venue login</option>
+                <option value="td">TD login</option>
+                <option value="player">Player login</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <span class="label label-with-info">
+                <span id="lbl-login-auto-login">Auto login on selected page</span>
+                <button
+                  type="button"
+                  class="feature-info"
+                  title="When off, the extension still redirects from /login to your selected page, but does not auto-fill or submit credentials."
+                  aria-label="Help: Auto login on selected page"
+                >
+                  i
+                </button>
+              </span>
+              <label class="switch">
+                <input
+                  type="checkbox"
+                  id="login-page-auto-login-enabled"
+                  role="switch"
+                  aria-labelledby="lbl-login-auto-login"
+                />
+                <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+              </label>
+            </div>
+            <div class="row-num login-credentials-row" data-login-target="venue">
+              <label class="label" for="login-page-venue-username">Venue username</label>
+              <input
+                type="text"
+                id="login-page-venue-username"
+                class="add-player-value login-credential-input"
+                autocomplete="username"
+                spellcheck="false"
+              />
+            </div>
+            <div class="row-num login-credentials-row" data-login-target="venue">
+              <label class="label" for="login-page-venue-password">Venue password</label>
+              <input
+                type="password"
+                id="login-page-venue-password"
+                class="add-player-value login-credential-input"
+                autocomplete="current-password"
+                spellcheck="false"
+              />
+            </div>
+            <div class="row-num login-credentials-row" data-login-target="td">
+              <label class="label" for="login-page-td-username">TD username</label>
+              <input
+                type="text"
+                id="login-page-td-username"
+                class="add-player-value login-credential-input"
+                autocomplete="username"
+                spellcheck="false"
+              />
+            </div>
+            <div class="row-num login-credentials-row" data-login-target="td">
+              <label class="label" for="login-page-td-password">TD password</label>
+              <input
+                type="password"
+                id="login-page-td-password"
+                class="add-player-value login-credential-input"
+                autocomplete="current-password"
+                spellcheck="false"
+              />
+            </div>
+            <div class="row-num login-credentials-row" data-login-target="player">
+              <label class="label" for="login-page-player-username">Player username</label>
+              <input
+                type="text"
+                id="login-page-player-username"
+                class="add-player-value login-credential-input"
+                autocomplete="username"
+                spellcheck="false"
+              />
+            </div>
+            <div class="row-num login-credentials-row" data-login-target="player">
+              <label class="label" for="login-page-player-password">Player password</label>
+              <input
+                type="password"
+                id="login-page-player-password"
+                class="add-player-value login-credential-input"
+                autocomplete="current-password"
+                spellcheck="false"
+              />
             </div>
           </div>
         </div>
@@ -1874,12 +2013,12 @@
         <div class="card">
           <div class="setting-row">
             <span class="label label-with-info">
-              <span id="lbl-duplicate-ranks">Prevent duplicate scores</span>
+              <span id="lbl-duplicate-ranks">Prevent duplicate ranks</span>
               <button
                 type="button"
                 class="feature-info"
                 title="Rank selects on Edit Scores are normally independent. Choose whether to highlight duplicate ranks, block choosing the same rank twice, or leave Redtooth’s default behaviour."
-                aria-label="Help: Prevent duplicate scores"
+                aria-label="Help: Prevent duplicate ranks"
               >
                 i
               </button>
@@ -1893,6 +2032,31 @@
               <option value="highlight" selected>Highlight duplicates</option>
               <option value="prevent">Prevent duplicate selections</option>
             </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="setting-row">
+            <span class="label label-with-info">
+              <span id="lbl-highlight-missing-ranks">Highlight missing ranks</span>
+              <button
+                type="button"
+                class="feature-info"
+                title="Shows a panel below the player archive bar with missing rank numbers."
+                aria-label="Help: Highlight missing ranks"
+              >
+                i
+              </button>
+            </span>
+            <label class="switch">
+              <input
+                type="checkbox"
+                id="edit-scores-highlight-missing-ranks"
+                role="switch"
+                aria-labelledby="lbl-highlight-missing-ranks"
+              />
+              <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+            </label>
           </div>
         </div>
 

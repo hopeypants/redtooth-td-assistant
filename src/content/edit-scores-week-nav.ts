@@ -14,6 +14,27 @@ import { isExtensionContextValid } from './extension-context'
 const EDIT_SCORES_PATH_RE = /^\/venue_admin\/editscores\/(\d+)\/?$/
 
 const NAV_CONTAINER_ID = 'redtooth-td-assistant-editscores-nav'
+const NAV_STYLE_ID = 'redtooth-td-assistant-editscores-nav-style-v4'
+
+function ensureWeekNavStyles(): void {
+  if (document.getElementById(NAV_STYLE_ID)) return
+  const s = document.createElement('style')
+  s.id = NAV_STYLE_ID
+  s.textContent = [
+    `#${NAV_CONTAINER_ID}{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:10px 12px;background:#f4f6fa;border:1px solid #d8dee8;border-radius:6px;font:14px/1.4 system-ui,-apple-system,sans-serif;color:#1a1a1a;}`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-line1{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;flex:1 1 auto;min-width:0;max-width:100%;box-sizing:border-box;}`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-btns{display:flex;flex:0 0 auto;align-items:center;gap:8px;}`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-btns button{width:100px;flex:0 0 100px;box-sizing:border-box;min-height:32px;padding:5px 10px;font:inherit;border-radius:4px;border:1px solid #2c5282;background:#2b6cb0;color:#fff;cursor:pointer;}`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-btns button:hover{background:#2c5282;}`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-line2{display:flex;align-items:center;gap:8px;flex:0 1 auto;margin-left:auto;min-width:0;box-sizing:border-box;}`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-line2 .rta-weeknav-jump-select{flex:1 1 auto;min-width:0;max-width:100%;}`,
+    `@media (max-width:790px){`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-line2{flex:1 1 100%;width:100%;max-width:100%;margin-left:0;}`,
+    `#${NAV_CONTAINER_ID} .rta-weeknav-line2 .rta-weeknav-jump-select{width:100%;min-width:0 !important;max-width:none;}`,
+    `}`,
+  ].join('')
+  document.head.appendChild(s)
+}
 
 export type EditScoresNavSettings = {
   enabled: boolean
@@ -86,36 +107,32 @@ function createNav(
 ): HTMLElement | null {
   if (!settings.showPrevNext && !settings.showJump) return null
 
+  ensureWeekNavStyles()
+
   const wrap = document.createElement('div')
   wrap.id = NAV_CONTAINER_ID
   wrap.style.cssText = [
-    'display:flex',
-    'flex-wrap:wrap',
-    'align-items:center',
-    'gap:10px 12px',
     'margin:12px 0 10px',
-    'padding:10px 12px',
     'width:100%',
     'box-sizing:border-box',
-    'background:#f4f6fa',
-    'border:1px solid #d8dee8',
-    'border-radius:6px',
-    'font:14px/1.4 system-ui,-apple-system,sans-serif',
-    'color:#1a1a1a',
   ].join(';')
+
+  const line1 = document.createElement('div')
+  line1.className = 'rta-weeknav-line1'
 
   const label = document.createElement('span')
   label.style.fontWeight = '600'
   label.textContent = 'Game weeks'
-
-  const children: Node[] = [label]
+  line1.appendChild(label)
 
   if (settings.showPrevNext) {
+    const btnGroup = document.createElement('div')
+    btnGroup.className = 'rta-weeknav-btns'
+
     const prev = document.createElement('button')
     prev.type = 'button'
     prev.textContent = 'Previous'
     prev.title = 'Previous game week'
-    styleButton(prev)
     prev.addEventListener('click', () => {
       if (currentId > 1) {
         window.location.assign(buildEditScoresUrl(currentId - 1))
@@ -126,26 +143,32 @@ function createNav(
     next.type = 'button'
     next.textContent = 'Next'
     next.title = 'Next game week'
-    styleButton(next)
     next.addEventListener('click', () => {
       window.location.assign(buildEditScoresUrl(currentId + 1))
     })
 
-    children.push(prev, next)
+    btnGroup.append(prev, next)
+    line1.appendChild(btnGroup)
   }
 
+  wrap.appendChild(line1)
+
   if (settings.showJump) {
+    const line2 = document.createElement('div')
+    line2.className = 'rta-weeknav-line2'
+
     const jumpLabel = document.createElement('label')
     jumpLabel.style.cssText =
-      'display:flex;align-items:center;gap:8px;margin:0;margin-left:auto;'
+      'display:flex;align-items:center;gap:8px;margin:0;width:100%;box-sizing:border-box;'
     const jumpText = document.createElement('span')
     jumpText.textContent = 'Jump to'
     jumpText.style.whiteSpace = 'nowrap'
 
     const select = document.createElement('select')
+    select.className = 'rta-weeknav-jump-select'
     select.setAttribute('aria-label', 'Jump to game week')
     select.style.cssText =
-      'font:inherit;padding:4px 8px;border-radius:4px;border:1px solid #b8c0cc;min-width:16rem;background:#fff;'
+      'font:inherit;padding:4px 8px;border-radius:4px;border:1px solid #b8c0cc;min-width:12rem;background:#fff;box-sizing:border-box;'
 
     const placeholder = document.createElement('option')
     placeholder.value = ''
@@ -191,29 +214,11 @@ function createNav(
 
     syncSelect()
     jumpLabel.append(jumpText, select)
-    children.push(jumpLabel)
+    line2.appendChild(jumpLabel)
+    wrap.appendChild(line2)
   }
 
-  wrap.append(...children)
   return wrap
-}
-
-function styleButton(el: HTMLButtonElement): void {
-  el.style.cssText = [
-    'font:inherit',
-    'padding:6px 14px',
-    'border-radius:4px',
-    'border:1px solid #2c5282',
-    'background:#2b6cb0',
-    'color:#fff',
-    'cursor:pointer',
-  ].join(';')
-  el.addEventListener('mouseenter', () => {
-    if (!el.disabled) el.style.background = '#2c5282'
-  })
-  el.addEventListener('mouseleave', () => {
-    el.style.background = '#2b6cb0'
-  })
 }
 
 const STORAGE_GET_KEYS = Object.values(STORAGE_KEYS)

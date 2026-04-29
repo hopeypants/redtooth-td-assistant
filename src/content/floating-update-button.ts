@@ -8,27 +8,42 @@ import { isExtensionContextValid } from './extension-context'
 
 export const EDIT_SCORES_PATH_RE = /^\/venue_admin\/editscores\/(\d+)\/?$/
 const FLOAT_WRAP_ID = 'redtooth-td-assistant-floating-update'
-/** Hide the floating Update when the viewport bottom is within this many px of the document bottom (native Update is in reach). */
-const FLOAT_UPDATE_HIDE_WHEN_WITHIN_BOTTOM_PX = 350
 
 type HorizontalSide = 'left' | 'right'
 
 let floatingUpdateStorageListenerAttached = false
 let floatingUpdateScrollVisibilityAttached = false
 
-function distanceViewportBottomToDocumentBottom(): number {
-  const el = document.documentElement
-  return el.scrollHeight - window.scrollY - window.innerHeight
+/** Same resolution order as `triggerPageUpdate` — the in-page Update control below the table. */
+function resolveNativeUpdateButton(): HTMLElement | null {
+  const byId = document.getElementById('btnUpdate')
+  if (byId) return byId
+  const byName = document.querySelector<HTMLElement>(
+    'input[name="btnUpdate"][type="button"]',
+  )
+  if (byName) return byName
+  const byValue = document.querySelector<HTMLElement>(
+    'input.btn[type="button"][value="Update"]',
+  )
+  return byValue
+}
+
+/** True when the native Update button exists and intersects the visible viewport. */
+function isNativeUpdateInViewport(): boolean {
+  const el = resolveNativeUpdateButton()
+  if (!el || !el.isConnected) return false
+  const r = el.getBoundingClientRect()
+  const vh = window.innerHeight
+  const vw = window.innerWidth
+  return r.bottom > 0 && r.right > 0 && r.top < vh && r.left < vw
 }
 
 function syncFloatingUpdateScrollVisibility(): void {
   const wrap = document.getElementById(FLOAT_WRAP_ID)
   if (!wrap) return
-  const distBelowViewportToDocBottom = distanceViewportBottomToDocumentBottom()
-  const nearPageBottom =
-    distBelowViewportToDocBottom <= FLOAT_UPDATE_HIDE_WHEN_WITHIN_BOTTOM_PX
-  wrap.style.visibility = nearPageBottom ? 'hidden' : ''
-  wrap.style.pointerEvents = nearPageBottom ? 'none' : ''
+  const hide = isNativeUpdateInViewport()
+  wrap.style.visibility = hide ? 'hidden' : ''
+  wrap.style.pointerEvents = hide ? 'none' : ''
 }
 
 function ensureFloatingUpdateScrollVisibilityListener(): void {
@@ -59,19 +74,8 @@ function applyFloatingWrapInset(wrap: HTMLElement, side: HorizontalSide): void {
 }
 
 function triggerPageUpdate(): void {
-  const native =
-    document.getElementById('btnUpdate') ??
-    document.querySelector<HTMLInputElement>('input[name="btnUpdate"][type="button"]')
-  if (native instanceof HTMLInputElement) {
-    native.click()
-    return
-  }
-  const byValue = document.querySelector<HTMLInputElement>(
-    'input.btn[type="button"][value="Update"]',
-  )
-  if (byValue) {
-    byValue.click()
-  }
+  const native = resolveNativeUpdateButton()
+  if (native) native.click()
 }
 
 function mountFloatingUpdate(side: HorizontalSide): void {
@@ -100,6 +104,7 @@ function mountFloatingUpdate(side: HorizontalSide): void {
   document.body.appendChild(wrap)
   ensureFloatingUpdateScrollVisibilityListener()
   syncFloatingUpdateScrollVisibility()
+  requestAnimationFrame(() => syncFloatingUpdateScrollVisibility())
 }
 
 function removeFloatingUpdate(): void {

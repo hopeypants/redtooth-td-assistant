@@ -1,5 +1,7 @@
 import { initAddPlayerDetails } from './add-player-details'
 import { initEditScoresDuplicateRanks } from './edit-scores-duplicate-ranks'
+import { initEditScoresRankHeaderCount } from './edit-scores-rank-header-count'
+import { initEditScoresRankRowFocus } from './edit-scores-rank-row-focus'
 import { initEditScoresPlayerArchive } from './edit-scores-player-archive'
 import { initEditScoresTableRowPadding } from './edit-scores-table-row-padding'
 import { initEditScoresWeekNav } from './edit-scores-week-nav'
@@ -21,6 +23,8 @@ function tryMount(): void {
         initLoadedBadge()
         initEditScoresTableRowPadding()
         initEditScoresDuplicateRanks()
+        initEditScoresRankRowFocus()
+        initEditScoresRankHeaderCount()
         initEditScoresWeekNav()
         initEditScoresPlayerArchive()
         initFloatingUpdateButton()
@@ -31,6 +35,8 @@ function tryMount(): void {
       initLoadedBadge()
       initEditScoresTableRowPadding()
       initEditScoresDuplicateRanks()
+      initEditScoresRankRowFocus()
+      initEditScoresRankHeaderCount()
       initListSeasonScoreWeeksDates()
       const enabled = items[STORAGE_KEYS.assistantEnabled]
       if (enabled === false) return

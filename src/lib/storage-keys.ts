@@ -33,8 +33,29 @@ export const STORAGE_KEYS = {
   editScoresPlayerNameFilterCtrlFToFocus: 'editScoresPlayerNameFilterCtrlFToFocus',
   /** Escape clears the name filter when the filter input is focused. */
   editScoresPlayerNameFilterEscClears: 'editScoresPlayerNameFilterEscClears',
+  /** Show missing rank numbers panel below archive bar on Edit Ranks page. */
+  editScoresHighlightMissingRanks: 'editScoresHighlightMissingRanks',
   /** Redtooth `player_<id>` numeric ids to treat as inactive / hidden on Edit Scores. */
   editScoresArchivedPlayerIds: 'editScoresArchivedPlayerIds',
+  /** Login helper: auto-redirect from `/login` to one selected login page. */
+  loginPageEnabled: 'loginPageEnabled',
+  /** Preferred login target when enabled: `venue` | `td` | `player`. */
+  loginPageTarget: 'loginPageTarget',
+  /** Stored username/email for login auto-fill. */
+  loginPageUsername: 'loginPageUsername',
+  /** Stored password for login auto-fill. */
+  loginPagePassword: 'loginPagePassword',
+  /** When false, only redirect to selected login page; do not auto-submit credentials. */
+  loginPageAutoLoginEnabled: 'loginPageAutoLoginEnabled',
+  /** Venue login credentials. */
+  loginPageVenueUsername: 'loginPageVenueUsername',
+  loginPageVenuePassword: 'loginPageVenuePassword',
+  /** Tournament Director login credentials. */
+  loginPageTdUsername: 'loginPageTdUsername',
+  loginPageTdPassword: 'loginPageTdPassword',
+  /** Player login credentials. */
+  loginPagePlayerUsername: 'loginPagePlayerUsername',
+  loginPagePlayerPassword: 'loginPagePlayerPassword',
   /** Fixed “loaded” pill on venue admin pages (position avoids floating Update when both on the left). */
   showLoadedBadge: 'showLoadedBadge',
   /** Options page only: 'light' | 'dark' | 'system' */
@@ -88,6 +109,7 @@ export const STORAGE_KEYS = {
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]
 
 export type EditScoresDuplicateRankBehavior = 'off' | 'highlight' | 'prevent'
+export type LoginPageTarget = 'venue' | 'td' | 'player'
 
 export const STORAGE_DEFAULTS = {
   assistantEnabled: true,
@@ -105,7 +127,19 @@ export const STORAGE_DEFAULTS = {
   editScoresPlayerNameFilterIncludeArchived: true,
   editScoresPlayerNameFilterCtrlFToFocus: true,
   editScoresPlayerNameFilterEscClears: true,
+  editScoresHighlightMissingRanks: true,
   editScoresArchivedPlayerIds: [] as number[],
+  loginPageEnabled: false,
+  loginPageTarget: 'venue' as const,
+  loginPageUsername: '',
+  loginPagePassword: '',
+  loginPageAutoLoginEnabled: true,
+  loginPageVenueUsername: '',
+  loginPageVenuePassword: '',
+  loginPageTdUsername: '',
+  loginPageTdPassword: '',
+  loginPagePlayerUsername: '',
+  loginPagePlayerPassword: '',
   showLoadedBadge: true,
   settingsUiTheme: 'system' as const,
   settingsActiveTabId: 'tab-general',

@@ -8,6 +8,7 @@ import {
   STORAGE_DEFAULTS,
   STORAGE_KEYS,
   type EditScoresDuplicateRankBehavior,
+  type LoginPageTarget,
   type SettingsUiThemePreference,
 } from '../lib/storage-keys'
 import {
@@ -84,6 +85,9 @@ const editScoresTableSpacingResetBtn = document.querySelector<HTMLButtonElement>
 )
 const editScoresDuplicateRankBehaviorSelect =
   document.querySelector<HTMLSelectElement>('#edit-scores-duplicate-rank-behavior')
+const editScoresHighlightMissingRanksCb = document.querySelector<HTMLInputElement>(
+  '#edit-scores-highlight-missing-ranks',
+)
 const editScoresPlayerArchiveCb = document.querySelector<HTMLInputElement>(
   '#edit-scores-player-archive-enabled',
 )
@@ -104,6 +108,27 @@ const editScoresPlayerNameFilterIncludeArchivedCb =
   document.querySelector<HTMLInputElement>(
     '#edit-scores-player-name-filter-include-archived',
   )
+const loginPageEnabledCb =
+  document.querySelector<HTMLInputElement>('#login-page-enabled')
+const loginPageSubEl =
+  document.querySelector<HTMLDivElement>('#login-page-subsettings')
+const loginPageTargetSelect =
+  document.querySelector<HTMLSelectElement>('#login-page-target')
+const loginPageVenueUsernameIn =
+  document.querySelector<HTMLInputElement>('#login-page-venue-username')
+const loginPageVenuePasswordIn =
+  document.querySelector<HTMLInputElement>('#login-page-venue-password')
+const loginPageTdUsernameIn =
+  document.querySelector<HTMLInputElement>('#login-page-td-username')
+const loginPageTdPasswordIn =
+  document.querySelector<HTMLInputElement>('#login-page-td-password')
+const loginPagePlayerUsernameIn =
+  document.querySelector<HTMLInputElement>('#login-page-player-username')
+const loginPagePlayerPasswordIn =
+  document.querySelector<HTMLInputElement>('#login-page-player-password')
+const loginCredentialRows = Array.from(
+  document.querySelectorAll<HTMLDivElement>('.login-credentials-row[data-login-target]'),
+)
 const nameFilterIncludeArchivedRowEl = document.querySelector<HTMLDivElement>(
   '#player-name-filter-include-archived-row',
 )
@@ -205,12 +230,23 @@ if (
   !listSeasonScoreWeeksPlayDayOfWeekSelect ||
   !editScoresTablePaddingVIn ||
   !editScoresDuplicateRankBehaviorSelect ||
+  !editScoresHighlightMissingRanksCb ||
   !editScoresPlayerArchiveCb ||
   !editScoresPlayerNameFilterCb ||
   !playerNameFilterSubEl ||
   !editScoresPlayerNameFilterCtrlFCb ||
   !editScoresPlayerNameFilterEscClearsCb ||
   !editScoresPlayerNameFilterIncludeArchivedCb ||
+  !loginPageEnabledCb ||
+  !loginPageSubEl ||
+  !loginPageTargetSelect ||
+  !loginPageVenueUsernameIn ||
+  !loginPageVenuePasswordIn ||
+  !loginPageTdUsernameIn ||
+  !loginPageTdPasswordIn ||
+  !loginPagePlayerUsernameIn ||
+  !loginPagePlayerPasswordIn ||
+  loginCredentialRows.length === 0 ||
   !nameFilterIncludeArchivedRowEl ||
   !showLoadedBadgeCb ||
   !headerBuyMeACoffeeWrapEl ||
@@ -289,6 +325,7 @@ const editScoresTablePaddingVInput = editScoresTablePaddingVIn
 const editScoresTableSpacingResetButton =
   editScoresTableSpacingResetBtn as HTMLButtonElement
 const duplicateRankBehaviorInput = editScoresDuplicateRankBehaviorSelect
+const highlightMissingRanksInput = editScoresHighlightMissingRanksCb
 const editScoresPlayerArchiveInput = editScoresPlayerArchiveCb
 const editScoresPlayerNameFilterInput = editScoresPlayerNameFilterCb
 const editScoresPlayerNameFilterCtrlFInput = editScoresPlayerNameFilterCtrlFCb
@@ -296,6 +333,15 @@ const editScoresPlayerNameFilterEscClearsInput =
   editScoresPlayerNameFilterEscClearsCb
 const editScoresPlayerNameFilterIncludeArchivedInput =
   editScoresPlayerNameFilterIncludeArchivedCb
+const loginPageEnabledInput = loginPageEnabledCb
+const loginPageSub = loginPageSubEl!
+const loginPageTargetInput = loginPageTargetSelect!
+const loginPageVenueUsernameInput = loginPageVenueUsernameIn!
+const loginPageVenuePasswordInput = loginPageVenuePasswordIn!
+const loginPageTdUsernameInput = loginPageTdUsernameIn!
+const loginPageTdPasswordInput = loginPageTdPasswordIn!
+const loginPagePlayerUsernameInput = loginPagePlayerUsernameIn!
+const loginPagePlayerPasswordInput = loginPagePlayerPasswordIn!
 const nameFilterIncludeArchivedRow = nameFilterIncludeArchivedRowEl!
 const showLoadedBadgeInput = showLoadedBadgeCb
 const headerBuyMeACoffeeWrap = headerBuyMeACoffeeWrapEl!
@@ -463,6 +509,11 @@ function normalizeEditScoresDuplicateRankBehavior(
   return STORAGE_DEFAULTS.editScoresDuplicateRankBehavior
 }
 
+function normalizeLoginPageTarget(raw: unknown): LoginPageTarget {
+  if (raw === 'venue' || raw === 'td' || raw === 'player') return raw
+  return STORAGE_DEFAULTS.loginPageTarget
+}
+
 function setSubsettingsVisible(show: boolean): void {
   subsettings.hidden = !show
 }
@@ -486,6 +537,17 @@ function syncNameFilterIncludeArchivedRowFromToggle(): void {
 
 function syncFloatingUpdateSubFromToggle(): void {
   floatingUpdateSub.hidden = !editScoresFloatingUpdateInput.checked
+}
+
+function syncLoginPageSubFromToggle(): void {
+  loginPageSub.hidden = !loginPageEnabledInput.checked
+}
+
+function syncLoginCredentialRowsFromTarget(): void {
+  const target = normalizeLoginPageTarget(loginPageTargetInput.value)
+  for (const row of loginCredentialRows) {
+    row.hidden = row.dataset.loginTarget !== target
+  }
 }
 
 function syncListSeasonScoreWeeksFormatSubFromToggle(): void {
@@ -853,6 +915,11 @@ function load(): void {
     duplicateRankBehaviorInput.value = normalizeEditScoresDuplicateRankBehavior(
       items[STORAGE_KEYS.editScoresDuplicateRankBehavior],
     )
+    const missRanks = items[STORAGE_KEYS.editScoresHighlightMissingRanks]
+    highlightMissingRanksInput.checked =
+      typeof missRanks === 'boolean'
+        ? missRanks
+        : STORAGE_DEFAULTS.editScoresHighlightMissingRanks
 
     const archEn = items[STORAGE_KEYS.editScoresPlayerArchiveEnabled]
     editScoresPlayerArchiveInput.checked =
@@ -883,6 +950,41 @@ function load(): void {
       typeof escClr === 'boolean'
         ? escClr
         : STORAGE_DEFAULTS.editScoresPlayerNameFilterEscClears
+
+    const loginEnabled = items[STORAGE_KEYS.loginPageEnabled]
+    loginPageEnabledInput.checked =
+      typeof loginEnabled === 'boolean'
+        ? loginEnabled
+        : STORAGE_DEFAULTS.loginPageEnabled
+    loginPageTargetInput.value = normalizeLoginPageTarget(
+      items[STORAGE_KEYS.loginPageTarget],
+    )
+    const legacyUser =
+      typeof items[STORAGE_KEYS.loginPageUsername] === 'string'
+        ? (items[STORAGE_KEYS.loginPageUsername] as string)
+        : STORAGE_DEFAULTS.loginPageUsername
+    const legacyPass =
+      typeof items[STORAGE_KEYS.loginPagePassword] === 'string'
+        ? (items[STORAGE_KEYS.loginPagePassword] as string)
+        : STORAGE_DEFAULTS.loginPagePassword
+    const venueUser = items[STORAGE_KEYS.loginPageVenueUsername]
+    loginPageVenueUsernameInput.value =
+      typeof venueUser === 'string' && venueUser !== '' ? venueUser : legacyUser
+    const venuePass = items[STORAGE_KEYS.loginPageVenuePassword]
+    loginPageVenuePasswordInput.value =
+      typeof venuePass === 'string' && venuePass !== '' ? venuePass : legacyPass
+    const tdUser = items[STORAGE_KEYS.loginPageTdUsername]
+    loginPageTdUsernameInput.value =
+      typeof tdUser === 'string' && tdUser !== '' ? tdUser : legacyUser
+    const tdPass = items[STORAGE_KEYS.loginPageTdPassword]
+    loginPageTdPasswordInput.value =
+      typeof tdPass === 'string' && tdPass !== '' ? tdPass : legacyPass
+    const playerUser = items[STORAGE_KEYS.loginPagePlayerUsername]
+    loginPagePlayerUsernameInput.value =
+      typeof playerUser === 'string' && playerUser !== '' ? playerUser : legacyUser
+    const playerPass = items[STORAGE_KEYS.loginPagePlayerPassword]
+    loginPagePlayerPasswordInput.value =
+      typeof playerPass === 'string' && playerPass !== '' ? playerPass : legacyPass
 
     const showBadge = items[STORAGE_KEYS.showLoadedBadge]
     showLoadedBadgeInput.checked =
@@ -1014,6 +1116,8 @@ function load(): void {
     syncDefaultFieldValuesSubFromToggle()
     syncPlayerNameFilterSubFromToggle()
     syncNameFilterIncludeArchivedRowFromToggle()
+    syncLoginPageSubFromToggle()
+    syncLoginCredentialRowsFromTarget()
 
     const tabs = Array.from(
       tabListEl!.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
@@ -1107,6 +1211,36 @@ editScoresFloatingUpdatePositionInput.addEventListener('change', () => {
   })
 })
 
+loginPageEnabledInput.addEventListener('change', () => {
+  save({ [STORAGE_KEYS.loginPageEnabled]: loginPageEnabledInput.checked })
+  syncLoginPageSubFromToggle()
+})
+
+loginPageTargetInput.addEventListener('change', () => {
+  save({
+    [STORAGE_KEYS.loginPageTarget]: normalizeLoginPageTarget(loginPageTargetInput.value),
+  })
+  syncLoginCredentialRowsFromTarget()
+})
+
+function saveLoginCredentials(): void {
+  save({
+    [STORAGE_KEYS.loginPageVenueUsername]: loginPageVenueUsernameInput.value,
+    [STORAGE_KEYS.loginPageVenuePassword]: loginPageVenuePasswordInput.value,
+    [STORAGE_KEYS.loginPageTdUsername]: loginPageTdUsernameInput.value,
+    [STORAGE_KEYS.loginPageTdPassword]: loginPageTdPasswordInput.value,
+    [STORAGE_KEYS.loginPagePlayerUsername]: loginPagePlayerUsernameInput.value,
+    [STORAGE_KEYS.loginPagePlayerPassword]: loginPagePlayerPasswordInput.value,
+  })
+}
+
+loginPageVenueUsernameInput.addEventListener('change', saveLoginCredentials)
+loginPageVenuePasswordInput.addEventListener('change', saveLoginCredentials)
+loginPageTdUsernameInput.addEventListener('change', saveLoginCredentials)
+loginPageTdPasswordInput.addEventListener('change', saveLoginCredentials)
+loginPagePlayerUsernameInput.addEventListener('change', saveLoginCredentials)
+loginPagePlayerPasswordInput.addEventListener('change', saveLoginCredentials)
+
 listSeasonScoreWeeksDateFormatEnabledInput.addEventListener('change', () => {
   save({
     [STORAGE_KEYS.listSeasonScoreWeeksDateFormatEnabled]:
@@ -1170,6 +1304,13 @@ duplicateRankBehaviorInput.addEventListener('change', () => {
   save({
     [STORAGE_KEYS.editScoresDuplicateRankBehavior]:
       normalizeEditScoresDuplicateRankBehavior(duplicateRankBehaviorInput.value),
+  })
+})
+
+highlightMissingRanksInput.addEventListener('change', () => {
+  save({
+    [STORAGE_KEYS.editScoresHighlightMissingRanks]:
+      highlightMissingRanksInput.checked,
   })
 })
 

@@ -6,6 +6,7 @@ import {
 } from '../lib/settings-storage'
 import { STORAGE_DEFAULTS, STORAGE_KEYS } from '../lib/storage-keys'
 import { isExtensionContextValid } from './extension-context'
+import { syncEditScoresRankHeaderCount } from './edit-scores-rank-header-count'
 import { EDIT_SCORES_PATH_RE } from './floating-update-button'
 
 /** Venue Players (`venue_admin/listplayers/`) — same player IDs as Edit Scores (`editplayerdetails/&lt;id&gt;`). */
@@ -13,7 +14,7 @@ const LIST_PLAYERS_PATH_RE = /^\/venue_admin\/listplayers\/?/i
 const EDIT_PLAYER_DETAILS_HREF_RE = /\/venue_admin\/editplayerdetails\/(\d+)/i
 
 const BAR_ID = 'redtooth-td-assistant-player-archive-bar'
-const STYLE_ID = 'redtooth-td-assistant-player-archive-style'
+const STYLE_ID = 'redtooth-td-assistant-player-archive-style-v4'
 /** Inner flex wrapper — avoid `display:flex` on `<td>` (breaks table border-collapse). */
 const CELL_INNER_CLASS = 'rta-player-inner'
 const NAME_CLASS = 'rta-player-archive-name'
@@ -28,6 +29,7 @@ const STORAGE_KEYS_ARCHIVE = [
   STORAGE_KEYS.editScoresPlayerNameFilterIncludeArchived,
   STORAGE_KEYS.editScoresPlayerNameFilterCtrlFToFocus,
   STORAGE_KEYS.editScoresPlayerNameFilterEscClears,
+  STORAGE_KEYS.editScoresHighlightMissingRanks,
   STORAGE_KEYS.editScoresArchivedPlayerIds,
 ] as const
 
@@ -42,6 +44,7 @@ const CLEAR_PANEL_CLASS = 'rta-clear-archive-panel'
 /** Bar row: “Clear all archived” — same red treatment as the confirmation button. */
 const CLEAR_ARCHIVE_BAR_BTN_CLASS = 'rta-clear-archive-bar-btn'
 const NAME_FILTER_INPUT_ID = 'rta-edit-scores-name-filter'
+const MISSING_RANKS_PANEL_ID = 'rta-edit-scores-missing-ranks-panel'
 
 /** Live name filter on Edit Scores (substring match, case-insensitive). */
 let editScoresNameFilter = ''
@@ -71,6 +74,10 @@ let nameFilterEscClears: boolean =
   STORAGE_DEFAULTS.editScoresPlayerNameFilterEscClears
 
 let nameFilterWindowKeydownAttached = false
+/** Optional max rank (usually player count) used for missing-rank calculation on Edit Scores. */
+let missingRanksExpectedMaxText = ''
+let highlightMissingRanksEnabled: boolean =
+  STORAGE_DEFAULTS.editScoresHighlightMissingRanks
 
 function nameFilterWindowKeydownHandler(ev: KeyboardEvent): void {
   if (!nameFilterCtrlFToFocus || !editScoresNameFilterFeatureEnabled) return
@@ -155,24 +162,47 @@ function injectStyles(): void {
   const s = document.createElement('style')
   s.id = STYLE_ID
   s.textContent = [
-    `#${BAR_ID}{margin:0 0 10px 0;padding:10px 12px;background:#f0f4fa;border:1px solid #c5d0e0;border-radius:6px;font:13px/1.45 system-ui,sans-serif;color:#1a1a1a;}`,
-    `#${BAR_ID} .rta-bar-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;width:100%;justify-content:space-between;}`,
-    `#${BAR_ID} .rta-bar-left{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;flex:1;min-width:0;}`,
-    `#${BAR_ID} .rta-bar-filter-wrap{display:flex;align-items:center;gap:6px;margin-left:auto;flex-shrink:0;}`,
-    `#${BAR_ID} .rta-bar-filter-label{font-size:12px;color:#555;white-space:nowrap;}`,
-    `#${BAR_ID} .rta-name-filter-field{position:relative;display:inline-block;vertical-align:middle;}`,
+    `#${BAR_ID}{margin:0 0 14px 0;padding:10px 12px;background:#f0f4fa;border:1px solid #c5d0e0;border-radius:6px;font:13px/1.45 system-ui,sans-serif;color:#1a1a1a;container-type:inline-size;container-name:rta-archivebar;}`,
+    `#${BAR_ID} .rta-bar-row{display:flex;flex-wrap:wrap;flex-direction:row;align-items:center;gap:8px 14px;row-gap:10px;width:100%;justify-content:space-between;}`,
+    `#${BAR_ID} .rta-bar-left{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;flex:1;min-width:0;order:1;}`,
+    `#${BAR_ID} .rta-bar-filter-wrap{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;max-width:100%;min-width:0;order:2;}`,
+    `#${BAR_ID} .rta-bar-filter-label{font-size:12px;color:#555;white-space:nowrap;flex-shrink:0;}`,
+    `#${BAR_ID} .rta-name-filter-field{position:relative;display:block;flex:1 1 auto;min-width:0;max-width:100%;}`,
     `#${BAR_ID} .rta-name-filter{font:inherit;font-size:13px;padding:5px 26px 5px 8px;border:1px solid #c5d0e0;border-radius:4px;min-width:11rem;max-width:18rem;width:14rem;background:#fff;color:#1a1a1a;box-sizing:border-box;}`,
+    `@container rta-archivebar (max-width:36rem){`,
+    `#${BAR_ID} .rta-bar-row{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:10px;}`,
+    `#${BAR_ID} .rta-bar-left{width:100%;flex:0 0 auto;}`,
+    `#${BAR_ID} .${CLEAR_PANEL_CLASS}{order:2;margin-top:0;flex:0 0 auto;width:100%;}`,
+    `#${BAR_ID} .rta-bar-filter-wrap{order:3;width:100%;margin-left:0;flex-direction:row;align-items:center;gap:8px;min-width:0;}`,
+    `#${BAR_ID} .rta-name-filter-field{flex:1 1 auto;min-width:0;max-width:100%;}`,
+    `#${BAR_ID} .rta-name-filter{width:100% !important;max-width:none;min-width:0;}`,
+    `}`,
+    `@media (max-width:790px){`,
+    `#${BAR_ID} .rta-bar-left{flex:1 1 100%;width:100%;max-width:100%;}`,
+    `#${BAR_ID} .${CLEAR_PANEL_CLASS}{order:2;margin-top:0;flex:0 0 auto;width:100%;}`,
+    `#${BAR_ID} .rta-bar-filter-wrap{order:3;flex:1 1 100%;width:100%;max-width:100%;margin-left:0;}`,
+    `#${BAR_ID} .rta-name-filter-field{flex:1 1 auto;min-width:0;max-width:100%;}`,
+    `#${BAR_ID} .rta-name-filter{width:100% !important;max-width:none;min-width:0;}`,
+    `}`,
     `#${BAR_ID} .rta-name-filter:focus{outline:2px solid #2b6cb0;outline-offset:1px;}`,
-    `#${BAR_ID} .rta-name-filter-clear{position:absolute;right:2px;top:50%;transform:translateY(-50%);border:none;background:transparent;color:#a0aec0;padding:2px 6px;cursor:pointer;font-size:18px;line-height:1;font-weight:400;}`,
-    `#${BAR_ID} .rta-name-filter-clear:hover{color:#97a3b4;}`,
+    `#${BAR_ID} .rta-name-filter-clear{position:absolute;right:1px;top:50%;transform:translateY(-50%);border:none;background:transparent;color:#a0aec0;padding:2px 8px;cursor:pointer;font-size:18px;line-height:1;font-weight:400;}`,
+    `#${BAR_ID} .rta-name-filter-clear:hover{background-color:#ebebeb;}`,
     `#${BAR_ID} .rta-name-filter-clear[hidden]{display:none !important;}`,
-    `#${BAR_ID} button{font:inherit;padding:5px 10px;border-radius:4px;border:1px solid #2c5282;background:#2b6cb0;color:#fff;cursor:pointer;}`,
+    `#${BAR_ID} button{font:inherit;padding:5px 10px;min-height:32px;box-sizing:border-box;border-radius:4px;border:1px solid #2c5282;background:#2b6cb0;color:#fff;cursor:pointer;}`,
     `#${BAR_ID} button:hover{background:#2c5282;}`,
     `#${BAR_ID} button[aria-pressed="true"]{background:#2c5282;border-color:#1a365d;}`,
     `#${BAR_ID} button.${CLEAR_ARCHIVE_BAR_BTN_CLASS}{background:#c53030;border-color:#9b2c2c;color:#fff;}`,
     `#${BAR_ID} button.${CLEAR_ARCHIVE_BAR_BTN_CLASS}:hover{background:#9b2c2c;}`,
     `#${BAR_ID} .rta-bar-muted{color:#555;font-size:12px;}`,
-    `#${BAR_ID} .${CLEAR_PANEL_CLASS}{margin-top:10px;padding:10px 12px;background:#fffef9;border:1px solid #c53030;border-radius:6px;}`,
+    `#${MISSING_RANKS_PANEL_ID}{margin:0 0 14px 0;padding:10px 12px;background:#f7fafc;border:1px solid #d6dee8;border-radius:6px;font:13px/1.45 system-ui,sans-serif;color:#1a1a1a;}`,
+    `#${MISSING_RANKS_PANEL_ID} .rta-missing-ranks-row{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:8px 12px;min-width:0;}`,
+    `#${MISSING_RANKS_PANEL_ID} .rta-missing-ranks-label{font-weight:600;white-space:nowrap;flex:0 0 auto;}`,
+    `#${MISSING_RANKS_PANEL_ID} .rta-missing-ranks-expected{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:0 0 auto;}`,
+    `#${MISSING_RANKS_PANEL_ID} .rta-missing-ranks-expected span{white-space:nowrap;}`,
+    `#${MISSING_RANKS_PANEL_ID} .rta-missing-ranks-expected input{width:6rem;font:inherit;padding:4px 8px;border:1px solid #c5d0e0;border-radius:4px;background:#fff;color:#1a1a1a;box-sizing:border-box;}`,
+    `#${MISSING_RANKS_PANEL_ID} .rta-missing-ranks-body{color:#334155;word-break:break-word;overflow-wrap:anywhere;flex:1 1 auto;min-width:0;}`,
+    `#${MISSING_RANKS_PANEL_ID} .rta-missing-ranks-warning{margin-top:8px;color:#9b2c2c;font-weight:600;}`,
+    `#${BAR_ID} .${CLEAR_PANEL_CLASS}{order:3;margin-top:0;padding:10px 12px;background:#fffef9;border:1px solid #c53030;border-radius:6px;flex:1 1 100%;width:100%;min-width:0;box-sizing:border-box;}`,
     `#${BAR_ID} .${CLEAR_PANEL_CLASS} p{margin:0 0 10px;font-size:12px;line-height:1.45;color:#1a1a1a;}`,
     `#${BAR_ID} .${CLEAR_PANEL_CLASS} label.rta-clear-ack{display:flex;align-items:center;gap:8px;font-size:12px;line-height:1.35;cursor:pointer;margin:0 0 12px;color:#1a1a1a;}`,
     `#${BAR_ID} .${CLEAR_PANEL_CLASS} label.rta-clear-ack input{margin:0;flex-shrink:0;}`,
@@ -190,6 +220,100 @@ function injectStyles(): void {
   document.head.appendChild(s)
 }
 
+function parsePositiveIntOrNull(raw: string): number | null {
+  const t = raw.trim()
+  if (!t) return null
+  const n = Number.parseInt(t, 10)
+  return Number.isFinite(n) && n > 0 ? Math.trunc(n) : null
+}
+
+function readScoringRanks(table: HTMLTableElement): number[] {
+  const out: number[] = []
+  for (const sel of table.querySelectorAll<HTMLSelectElement>(
+    'select.player_ranks[name^="player_"]',
+  )) {
+    const n = Number.parseInt(sel.value, 10)
+    if (Number.isFinite(n) && n > 0) out.push(Math.trunc(n))
+  }
+  return out
+}
+
+function computeMissingRanksSummary(
+  table: HTMLTableElement,
+  expectedMax: number | null,
+): { missing: number[]; maxRank: number; rankedPlayers: number; highest: number } {
+  const ranks = readScoringRanks(table)
+  const rankedPlayers = ranks.length
+  const highest = ranks.length > 0 ? Math.max(...ranks) : 0
+  const maxRank = expectedMax === null ? highest : Math.max(highest, expectedMax)
+  if (maxRank <= 0) return { missing: [], maxRank: 0, rankedPlayers, highest }
+  const present = new Set(ranks)
+  const missing: number[] = []
+  for (let i = 1; i <= maxRank; i++) {
+    if (!present.has(i)) missing.push(i)
+  }
+  return { missing, maxRank, rankedPlayers, highest }
+}
+
+function ensureMissingRanksPanel(bar: HTMLElement): HTMLElement {
+  let el = document.getElementById(MISSING_RANKS_PANEL_ID)
+  if (!el) {
+    el = document.createElement('div')
+    el.id = MISSING_RANKS_PANEL_ID
+  }
+  bar.insertAdjacentElement('beforebegin', el)
+  return el
+}
+
+function renderMissingRanksPanel(
+  bar: HTMLElement,
+  table: HTMLTableElement,
+): void {
+  const panel = ensureMissingRanksPanel(bar)
+  const parsedExpected = parsePositiveIntOrNull(missingRanksExpectedMaxText)
+  const summary = computeMissingRanksSummary(table, parsedExpected)
+  const missingText =
+    summary.maxRank <= 0
+      ? 'No ranks entered yet.'
+      : summary.missing.length === 0
+        ? 'No missing ranks.'
+        : summary.missing.join(', ')
+  panel.innerHTML = ''
+  const row = document.createElement('div')
+  row.className = 'rta-missing-ranks-row'
+  const title = document.createElement('span')
+  title.className = 'rta-missing-ranks-label'
+  title.textContent = 'Missing ranks'
+  const expectedWrap = document.createElement('label')
+  expectedWrap.className = 'rta-missing-ranks-expected'
+  const expectedText = document.createElement('span')
+  expectedText.textContent = 'Number of players'
+  const expectedInput = document.createElement('input')
+  expectedInput.type = 'number'
+  expectedInput.min = '1'
+  expectedInput.step = '1'
+  expectedInput.placeholder = 'optional'
+  expectedInput.value = missingRanksExpectedMaxText
+  expectedInput.addEventListener('change', () => {
+    missingRanksExpectedMaxText = expectedInput.value
+    renderMissingRanksPanel(bar, table)
+  })
+  expectedWrap.append(expectedText, expectedInput)
+  const body = document.createElement('div')
+  body.className = 'rta-missing-ranks-body'
+  const rangeSuffix = summary.maxRank > 0 ? ` (1-${summary.maxRank})` : ''
+  body.textContent = `Ranks${rangeSuffix}: ${missingText}`
+  row.append(title, expectedWrap, body)
+  panel.append(row)
+  if (parsedExpected !== null && parsedExpected < summary.highest) {
+    const warning = document.createElement('div')
+    warning.className = 'rta-missing-ranks-warning'
+    warning.textContent =
+      `Warning: Number of players (${parsedExpected}) is less than highest rank entered (${summary.highest}).`
+    panel.append(warning)
+  }
+}
+
 function findScoresTable(): HTMLTableElement | null {
   const sel = document.querySelector<HTMLSelectElement>('select.player_ranks[name^="player_"]')
   if (!sel) return null
@@ -201,6 +325,67 @@ function findListPlayersTable(): HTMLTableElement | null {
     'table.styledTbl a[href*="/venue_admin/editplayerdetails/"]',
   )
   return a?.closest('table') ?? null
+}
+
+function playerThHeaderLabelForMatch(th: HTMLTableCellElement): string {
+  let t = (th.textContent ?? '').replace(/\s+/g, ' ').trim()
+  const stripped = /^(.*?)\s*\([^)]*\)\s*$/i.exec(t)
+  if (stripped) t = stripped[1].trim()
+  return t
+}
+
+function findPlayerColumnHeaderCell(
+  table: HTMLTableElement,
+): HTMLTableCellElement | null {
+  const headerRow = table.querySelector('thead tr') ?? table.rows[0]
+  if (!headerRow) return null
+  for (const th of headerRow.querySelectorAll<HTMLTableCellElement>('th')) {
+    const t = playerThHeaderLabelForMatch(th)
+    if (/^player\b/i.test(t)) return th
+  }
+  return null
+}
+
+function removePlayerThArchivedNote(th: HTMLTableCellElement): void {
+  const base = th.dataset.rtaPlayerThBase
+  if (base) {
+    th.textContent = base
+    delete th.dataset.rtaPlayerThBase
+  }
+}
+
+function archivedCountParenPhrase(n: number): string {
+  if (n === 0) return '0 players archived'
+  if (n === 1) return '1 player archived'
+  return `${n} players archived`
+}
+
+function syncPlayerThArchivedNote(
+  table: HTMLTableElement | null,
+  n: number,
+  archiveFeatureEnabled: boolean,
+): void {
+  if (!table) return
+  const th = findPlayerColumnHeaderCell(table)
+  if (!th) return
+  if (!archiveFeatureEnabled) {
+    removePlayerThArchivedNote(th)
+    return
+  }
+  let base = th.dataset.rtaPlayerThBase
+  if (!base) {
+    base = playerThHeaderLabelForMatch(th) || 'Players'
+    th.dataset.rtaPlayerThBase = base
+  }
+  th.textContent = `${base} (${archivedCountParenPhrase(n)})`
+}
+
+function clearAllPlayerThArchiveLabels(): void {
+  for (const th of document.querySelectorAll<HTMLTableCellElement>(
+    'th[data-rta-player-th-base]',
+  )) {
+    removePlayerThArchivedNote(th)
+  }
 }
 
 function playerNameTextForFilter(nameCell: HTMLTableCellElement): string {
@@ -373,6 +558,7 @@ function applyRowState(
   if (playerArchiveFeatureEnabled) {
     const btn = document.createElement('button')
     btn.type = 'button'
+    btn.tabIndex = -1
     if (isArchived) {
       btn.className = BTN_RESTORE
       btn.textContent = 'Restore'
@@ -387,9 +573,6 @@ function applyRowState(
     } else {
       btn.className = BTN_ARCHIVE
       btn.textContent = 'Archive'
-      if (onEditScores) {
-        btn.tabIndex = -1
-      }
       btn.title =
         'Hide this player on Edit Scores and Venue Players in your browser (does not remove them from Redtooth)'
       btn.addEventListener('click', () => {
@@ -403,7 +586,7 @@ function applyRowState(
   }
 }
 
-function appendClearArchiveConfirmPanel(bar: HTMLElement): void {
+function appendClearArchiveConfirmPanel(parent: HTMLElement): void {
   const panel = document.createElement('div')
   panel.className = CLEAR_PANEL_CLASS
   panel.setAttribute('role', 'region')
@@ -453,7 +636,7 @@ function appendClearArchiveConfirmPanel(bar: HTMLElement): void {
   panel.appendChild(label)
   actions.appendChild(confirmBtn)
   panel.appendChild(actions)
-  bar.appendChild(panel)
+  parent.appendChild(panel)
 }
 
 function ensureNameWrapped(nameCell: HTMLTableCellElement): void {
@@ -473,6 +656,7 @@ function refreshBar(
   bar: HTMLElement,
   archived: Set<number>,
   archiveFeatureEnabled: boolean,
+  table: HTMLTableElement | null,
 ): void {
   const n = archived.size
   if (!archiveFeatureEnabled) {
@@ -497,17 +681,6 @@ function refreshBar(
   left.className = 'rta-bar-left'
 
   if (archiveFeatureEnabled) {
-    const muted = document.createElement('span')
-    muted.className = 'rta-bar-muted'
-    muted.textContent =
-      n === 0
-        ? 'No archived players.'
-        : n === 1
-          ? '1 archived player.'
-          : `${n} archived players.`
-
-    left.appendChild(muted)
-
     if (n > 0) {
       const showHide = document.createElement('button')
       showHide.type = 'button'
@@ -608,7 +781,18 @@ function refreshBar(
     }
   }
 
-  row.appendChild(left)
+  if (left.childNodes.length > 0) {
+    row.appendChild(left)
+  }
+
+  if (
+    archiveFeatureEnabled &&
+    clearArchivePanelOpen &&
+    n > 0 &&
+    archivedRowsVisible
+  ) {
+    appendClearArchiveConfirmPanel(row)
+  }
 
   if (
     editScoresNameFilterFeatureEnabled &&
@@ -645,6 +829,7 @@ function refreshBar(
     )
     const clearFilterBtn = document.createElement('button')
     clearFilterBtn.type = 'button'
+    clearFilterBtn.tabIndex = -1
     clearFilterBtn.className = 'rta-name-filter-clear'
     clearFilterBtn.setAttribute(
       'aria-label',
@@ -704,20 +889,13 @@ function refreshBar(
 
   bar.appendChild(row)
 
-  if (
-    archiveFeatureEnabled &&
-    clearArchivePanelOpen &&
-    n > 0 &&
-    archivedRowsVisible
-  ) {
-    appendClearArchiveConfirmPanel(bar)
-  }
-
   if (document.getElementById(NAME_FILTER_INPUT_ID)) {
     ensureNameFilterWindowKeydownListener()
   } else {
     removeNameFilterWindowKeydownListener()
   }
+
+  syncPlayerThArchivedNote(table, n, archiveFeatureEnabled)
 }
 
 function teardownArchiveUi(): void {
@@ -728,7 +906,9 @@ function teardownArchiveUi(): void {
   nameFilterAutoFocusDone = false
   playerArchiveFeatureEnabled = STORAGE_DEFAULTS.editScoresPlayerArchiveEnabled
   removeNameFilterWindowKeydownListener()
+  clearAllPlayerThArchiveLabels()
   document.getElementById(BAR_ID)?.remove()
+  document.getElementById(MISSING_RANKS_PANEL_ID)?.remove()
   document.getElementById(STYLE_ID)?.remove()
   for (const tr of document.querySelectorAll<HTMLTableRowElement>(
     'tr[data-rta-archive-init]',
@@ -783,6 +963,11 @@ function applyFromStorage(items: Record<string, unknown>): void {
     typeof escClearsOpt === 'boolean'
       ? escClearsOpt
       : STORAGE_DEFAULTS.editScoresPlayerNameFilterEscClears
+  const highlightMissingOpt = items[STORAGE_KEYS.editScoresHighlightMissingRanks]
+  highlightMissingRanksEnabled =
+    typeof highlightMissingOpt === 'boolean'
+      ? highlightMissingOpt
+      : STORAGE_DEFAULTS.editScoresHighlightMissingRanks
 
   if (!archiveFeatureOn && !editScoresNameFilterFeatureEnabled) {
     teardownArchiveUi()
@@ -818,7 +1003,12 @@ function applyFromStorage(items: Record<string, unknown>): void {
     bar.id = BAR_ID
     table.insertAdjacentElement('beforebegin', bar)
   }
-  refreshBar(bar, archived, archiveFeatureOn)
+  refreshBar(bar, archived, archiveFeatureOn, table)
+  if (EDIT_SCORES_PATH_RE.test(path) && highlightMissingRanksEnabled) {
+    renderMissingRanksPanel(bar, table)
+  } else {
+    document.getElementById(MISSING_RANKS_PANEL_ID)?.remove()
+  }
 
   const archivedForRows = archiveFeatureOn ? archived : new Set<number>()
 
@@ -864,6 +1054,10 @@ function applyFromStorage(items: Record<string, unknown>): void {
       loadAndApply()
     })
   }
+
+  if (EDIT_SCORES_PATH_RE.test(path)) {
+    syncEditScoresRankHeaderCount()
+  }
 }
 
 function loadAndApply(): void {
@@ -906,6 +1100,7 @@ export function initEditScoresPlayerArchive(): void {
           !changes[STORAGE_KEYS.editScoresPlayerNameFilterIncludeArchived] &&
           !changes[STORAGE_KEYS.editScoresPlayerNameFilterCtrlFToFocus] &&
           !changes[STORAGE_KEYS.editScoresPlayerNameFilterEscClears] &&
+          !changes[STORAGE_KEYS.editScoresHighlightMissingRanks] &&
           !changes[STORAGE_KEYS.editScoresArchivedPlayerIds]
         ) {
           return

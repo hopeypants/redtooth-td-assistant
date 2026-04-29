@@ -278,6 +278,30 @@ function mountMembershipGenerateButton(items: Record<string, unknown>): void {
 }
 
 let addPlayerStorageListenerAttached = false
+let addPlayerSaveHookAttached = false
+let lastDefaultFieldItems: Record<string, unknown> = {}
+
+function maybeApplyDefaultsBeforeSaveSubmit(ev: Event): void {
+  if (!isExtensionContextValid()) return
+  const t = ev.target
+  if (!(t instanceof HTMLInputElement || t instanceof HTMLButtonElement)) return
+  const type = t.getAttribute('type')?.toLowerCase() ?? ''
+  const value = (t.getAttribute('value') ?? t.textContent ?? '').trim().toLowerCase()
+  const looksLikeSave = value === 'save' || t.name.toLowerCase() === 'save'
+  if (!(type === 'submit' && looksLikeSave)) return
+  applyDefaultFieldValues(lastDefaultFieldItems)
+}
+
+function ensureAddPlayerSaveHook(): void {
+  if (addPlayerSaveHookAttached) return
+  const form = document.getElementById('myForm')
+  if (!(form instanceof HTMLFormElement)) return
+  addPlayerSaveHookAttached = true
+  form.addEventListener('click', maybeApplyDefaultsBeforeSaveSubmit, true)
+  form.addEventListener('submit', () => {
+    applyDefaultFieldValues(lastDefaultFieldItems)
+  }, true)
+}
 
 function onAddPlayerStorageChanged(
   changes: Record<string, chrome.storage.StorageChange>,
@@ -327,6 +351,7 @@ function onAddPlayerStorageChanged(
           items[STORAGE_KEYS.addPlayerHighlightRequiredFields] === true,
           items,
         )
+        lastDefaultFieldItems = items as Record<string, unknown>
         applyDefaultFieldValues(items)
       },
     )
@@ -378,7 +403,9 @@ export function initAddPlayerDetails(): void {
         items,
       )
 
+      lastDefaultFieldItems = items as Record<string, unknown>
       applyDefaultFieldValues(items)
+      ensureAddPlayerSaveHook()
 
       if (!addPlayerStorageListenerAttached) {
         addPlayerStorageListenerAttached = true

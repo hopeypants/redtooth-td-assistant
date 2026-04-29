@@ -15,6 +15,7 @@ const WARNING_ID = 'redtooth-td-assistant-duplicate-rank-warning'
 const STYLE_ID = 'redtooth-td-assistant-duplicate-rank-style'
 const SELECT_DUP_CLASS = 'rta-dup-rank-select'
 const ROW_DUP_FILTER_HIDDEN_CLASS = 'rta-dup-filter-hidden'
+const NAME_FILTER_INPUT_ID = 'rta-edit-scores-name-filter'
 /** Same id as `floating-update-button.ts` — extension floating Update control. */
 const FLOATING_UPDATE_BTN_ID = 'redtooth-td-assistant-floating-btnUpdate'
 const UPDATE_BTN_DUP_BLOCK_CLASS = 'rta-update-blocked-by-dups'
@@ -37,7 +38,7 @@ let tableMutationFlushPending = false
 let tableMutationFlushTable: HTMLTableElement | null = null
 let tableMutationFlushGeneration = 0
 let storageListenerAttached = false
-let documentChangeAttached = false
+let documentRankFocusOutAttached = false
 let tableWaitObserver: MutationObserver | null = null
 let tableWaitTimeout: ReturnType<typeof setTimeout> | undefined
 /** Invalidates pending deferred work when `mountFromSettings` runs again. */
@@ -115,7 +116,7 @@ function ensureWarningEl(): HTMLElement {
     const msg = document.createElement('span')
     msg.className = 'rta-dup-warn-msg'
     msg.textContent =
-      'Two or more players have the same rank selected. Change scores before saving.'
+      'Two or more players have the same rank selected. Change ranks before saving.'
 
     const actions = document.createElement('span')
     actions.className = 'rta-dup-warn-actions'
@@ -236,6 +237,11 @@ function wireWarningDupFilterLinks(warn: HTMLElement): void {
     if (!(t instanceof HTMLElement)) return
     if (t.closest('a.rta-dup-filter-link')) {
       e.preventDefault()
+      const filterInput = document.getElementById(NAME_FILTER_INPUT_ID)
+      if (filterInput instanceof HTMLInputElement && filterInput.value.trim() !== '') {
+        filterInput.value = ''
+        filterInput.dispatchEvent(new Event('input', { bubbles: true }))
+      }
       duplicateRowsFilterOnlyActive = true
       const table = findScoresTable()
       if (table) {
@@ -431,7 +437,7 @@ function scheduleTableMutationFlush(table: HTMLTableElement): void {
   })
 }
 
-function onRankChange(ev: Event): void {
+function onRankFocusOut(ev: Event): void {
   if (currentMode === 'off') return
   const t = ev.target
   if (!(t instanceof HTMLSelectElement)) return
@@ -440,9 +446,11 @@ function onRankChange(ev: Event): void {
   if (!table) return
   const htmlTable = table as HTMLTableElement
   /**
-   * Replacing `<option>` nodes in the same turn as the `change` event breaks native
-   * `<select>` behaviour in Chromium (dropdown stops opening / selection glitches).
-   * Run after the browser commits the new value.
+   * Do not run duplicate logic on `change` — type-ahead in a `<select>` can commit
+   * intermediate values (e.g. 1 then 16). Wait until focus leaves the control.
+   *
+   * Replacing `<option>` nodes in the same turn as the user’s interaction can break
+   * native `<select>` behaviour in Chromium; defer one tick.
    */
   window.setTimeout(() => {
     if (!isExtensionContextValid()) return
@@ -452,10 +460,10 @@ function onRankChange(ev: Event): void {
   }, 0)
 }
 
-function attachDocumentChange(): void {
-  if (documentChangeAttached) return
-  documentChangeAttached = true
-  document.addEventListener('change', onRankChange, true)
+function attachDocumentRankFocusOut(): void {
+  if (documentRankFocusOutAttached) return
+  documentRankFocusOutAttached = true
+  document.addEventListener('focusout', onRankFocusOut, true)
 }
 
 function observeTable(table: HTMLTableElement): void {
@@ -528,7 +536,7 @@ function mountFromSettings(items: Record<string, unknown>): void {
   }
 
   injectStyle()
-  attachDocumentChange()
+  attachDocumentRankFocusOut()
 
   if (mode === 'off') {
     applyMode(table, 'off')
@@ -537,7 +545,7 @@ function mountFromSettings(items: Record<string, unknown>): void {
 
   /**
    * Defer first paint of highlight/prevent so we do not replace options in the same
-   * stack as Redtooth’s own init (same class of bug as deferred `change` handling).
+   * stack as Redtooth’s own init (same class of bug as deferred rank-control handling).
    */
   window.setTimeout(() => {
     if (gen !== mountGeneration) return
